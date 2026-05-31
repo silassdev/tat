@@ -13,14 +13,12 @@ TATS Beeds Shop is a role-based e-commerce platform purpose-built for selling ha
 - [Main Features](#main-features)
 - [Application Flow](#application-flow)
 - [Dashboard Split](#dashboard-split)
-- [Folder Structure](#folder-structure)
 - [Database Schema](#database-schema)
 - [Core Tables](#core-tables)
 - [Page List](#page-list)
 - [Route Map](#route-map)
 - [Build Order](#build-order)
-- [Notes](#notes)
-- [License](#license)
+
 
 ---
 
@@ -164,88 +162,7 @@ mindmap
       Email Verification
 ```
 
----
 
-## Folder Structure
-
-```text
-app/
-├── Console/
-├── Events/
-│   ├── OrderPlaced.php
-│   ├── PaymentFailed.php
-│   ├── TicketCreated.php
-│   └── UserVerified.php
-├── Http/
-│   ├── Controllers/
-│   │   ├── Admin/
-│   │   │   ├── DashboardController.php
-│   │   │   ├── ProductController.php
-│   │   │   ├── CollectionController.php
-│   │   │   ├── OrderController.php
-│   │   │   ├── PaymentController.php
-│   │   │   ├── CouponController.php
-│   │   │   ├── CustomerController.php
-│   │   │   ├── TicketController.php
-│   │   │   ├── AdminInviteController.php
-│   │   │   ├── DeliveryFeeController.php
-│   │   │   ├── SettingController.php
-│   │   │   ├── LogController.php
-│   │   │   └── ReportController.php
-│   │   ├── Customer/
-│   │   │   ├── DashboardController.php
-│   │   │   ├── OrderController.php
-│   │   │   ├── TicketController.php
-│   │   │   ├── ProfileController.php
-│   │   │   └── VerificationController.php
-│   │   ├── Auth/
-│   │   │   ├── LoginController.php
-│   │   │   ├── RegisterController.php
-│   │   │   ├── OtpController.php
-│   │   │   └── PasswordController.php
-│   │   ├── CartController.php
-│   │   ├── CheckoutController.php
-│   │   └── ShopController.php
-│   ├── Middleware/
-│   │   ├── AdminMiddleware.php
-│   │   ├── CustomerMiddleware.php
-│   │   ├── VerifiedEmailMiddleware.php
-│   │   └── GuestCheckoutMiddleware.php
-│   └── Requests/
-├── Mail/
-│   ├── OtpMail.php
-│   ├── AdminInviteMail.php
-│   ├── OrderConfirmedMail.php
-│   └── PaymentFailedMail.php
-├── Models/
-│   ├── User.php
-│   ├── Product.php
-│   ├── ProductImage.php
-│   ├── Collection.php
-│   ├── Cart.php
-│   ├── CartItem.php
-│   ├── Order.php
-│   ├── OrderItem.php
-│   ├── Payment.php
-│   ├── Coupon.php
-│   ├── Ticket.php
-│   ├── TicketMessage.php
-│   ├── DeliveryFee.php
-│   ├── EmailOtp.php
-│   ├── AdminInvite.php
-│   ├── ActivityLog.php
-│   └── Setting.php
-├── Services/
-│   ├── Cart/CartService.php
-│   ├── Coupon/CouponService.php
-│   ├── Checkout/CheckoutService.php
-│   ├── Payment/PaymentService.php
-│   ├── Verification/OtpService.php
-│   └── Support/TicketService.php
-└── Providers/
-```
-
----
 
 ## Database Schema
 
@@ -438,16 +355,3 @@ erDiagram
 11. Support tickets and chat
 12. Logs, reports, and analytics
 13. Admin invitation system
-
----
-
-## Notes
-
-- Keep admin and customer layouts fully separate — different base templates.
-- Use middleware for strict role-based access control on all routes.
-- Store OTPs with expiry timestamps and limit retry attempts.
-- Merge guest cart and session data into customer records after OTP verification.
-- Log all critical actions (orders, payments, admin changes) for full traceability.
-- Build mobile responsiveness from the first component — target mobile-first shoppers.
-- Bead product model should support `bead_type`, `color`, `size`, and `weight` for accurate filtering.
-  
