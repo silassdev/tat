@@ -1,166 +1,212 @@
 <x-store-layout>
-    <div x-data="{ activeTab: 'overview' }" class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        
-        <!-- Left Sidebar Navigation for Admin (3 Columns) -->
-        <div class="lg:col-span-3 bg-slate-950/40 border border-slate-800 rounded-3xl p-6 shadow-2xl relative font-mono-tech text-xs select-none">
-            <div class="absolute top-1.5 left-1.5 text-slate-800 font-mono text-[9px] pointer-events-none">+</div>
-            <div class="absolute bottom-1.5 right-1.5 text-slate-800 font-mono text-[9px] pointer-events-none">+</div>
+    <div x-data="{ activeTab: 'overview' }" class="flex flex-col lg:flex-row gap-6 items-start">
 
-            <div class="mb-6 text-center border-b border-slate-900 pb-4">
-                <div class="w-12 h-12 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 font-bold flex items-center justify-center text-base mx-auto mb-2 shrink-0">
-                    A
-                </div>
-                <h4 class="text-sm font-bold text-white tracking-tight truncate">Store Administrator</h4>
-                <span class="text-[10px] text-indigo-400 tracking-wider block">// ROOT_CONTROL_NODE</span>
-            </div>
+        {{-- ===================== LEFT SIDEBAR ===================== --}}
+        <aside class="w-full lg:w-64 shrink-0">
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden sticky top-24">
 
-            <!-- Dashboard Modules Tabs -->
-            <div class="flex flex-col gap-1.5">
-                <button @click="activeTab = 'overview'" 
-                        :class="activeTab === 'overview' ? 'border-emerald-500 bg-emerald-500/10 text-emerald-400' : 'border-transparent text-slate-400 hover:bg-slate-900 hover:text-white'"
-                        class="w-full text-left px-4 py-2.5 border rounded-xl font-bold uppercase tracking-wider transition">
-                    [ Overview Stats ]
-                </button>
-                <button @click="activeTab = 'products'" 
-                        :class="activeTab === 'products' ? 'border-emerald-500 bg-emerald-500/10 text-emerald-400' : 'border-transparent text-slate-400 hover:bg-slate-900 hover:text-white'"
-                        class="w-full text-left px-4 py-2.5 border rounded-xl font-bold uppercase tracking-wider transition">
-                    [ Product CRUD ]
-                </button>
-                <button @click="activeTab = 'orders'" 
-                        :class="activeTab === 'orders' ? 'border-emerald-500 bg-emerald-500/10 text-emerald-400' : 'border-transparent text-slate-400 hover:bg-slate-900 hover:text-white'"
-                        class="w-full text-left px-4 py-2.5 border rounded-xl font-bold uppercase tracking-wider transition">
-                    [ Manage Orders ]
-                </button>
-                <button @click="activeTab = 'customers'" 
-                        :class="activeTab === 'customers' ? 'border-emerald-500 bg-emerald-500/10 text-emerald-400' : 'border-transparent text-slate-400 hover:bg-slate-900 hover:text-white'"
-                        class="w-full text-left px-4 py-2.5 border rounded-xl font-bold uppercase tracking-wider transition">
-                    [ Customers List ]
-                </button>
-                <button @click="activeTab = 'coupons'" 
-                        :class="activeTab === 'coupons' ? 'border-emerald-500 bg-emerald-500/10 text-emerald-400' : 'border-transparent text-slate-400 hover:bg-slate-900 hover:text-white'"
-                        class="w-full text-left px-4 py-2.5 border rounded-xl font-bold uppercase tracking-wider transition">
-                    [ Coupons CRUD ]
-                </button>
-                <button @click="activeTab = 'delivery'" 
-                        :class="activeTab === 'delivery' ? 'border-emerald-500 bg-emerald-500/10 text-emerald-400' : 'border-transparent text-slate-400 hover:bg-slate-900 hover:text-white'"
-                        class="w-full text-left px-4 py-2.5 border rounded-xl font-bold uppercase tracking-wider transition">
-                    [ Delivery Fee ]
-                </button>
-                <button @click="activeTab = 'support'" 
-                        :class="activeTab === 'support' ? 'border-emerald-500 bg-emerald-500/10 text-emerald-400' : 'border-transparent text-slate-400 hover:bg-slate-900 hover:text-white'"
-                        class="w-full text-left px-4 py-2.5 border rounded-xl font-bold uppercase tracking-wider transition">
-                    [ Support Chat ]
-                </button>
-                <button @click="activeTab = 'invites'" 
-                        :class="activeTab === 'invites' ? 'border-emerald-500 bg-emerald-500/10 text-emerald-400' : 'border-transparent text-slate-400 hover:bg-slate-900 hover:text-white'"
-                        class="w-full text-left px-4 py-2.5 border rounded-xl font-bold uppercase tracking-wider transition">
-                    [ Invite Admin ]
-                </button>
-                <button @click="activeTab = 'logs'" 
-                        :class="activeTab === 'logs' ? 'border-emerald-500 bg-emerald-500/10 text-emerald-400' : 'border-transparent text-slate-400 hover:bg-slate-900 hover:text-white'"
-                        class="w-full text-left px-4 py-2.5 border rounded-xl font-bold uppercase tracking-wider transition">
-                    [ System Logs ]
-                </button>
-            </div>
-        </div>
-
-        <!-- Right Side: Active Modules HUD (9 Columns) -->
-        <div class="lg:col-span-9 space-y-6">
-
-            <!-- 1. Overview Tab -->
-            <div x-show="activeTab === 'overview'" x-transition class="space-y-6">
-                <!-- Stats widgets -->
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 font-mono-tech select-none">
-                    <div class="bg-slate-950/40 border border-slate-800 rounded-2xl p-5 shadow-lg">
-                        <span class="text-[9px] text-slate-500 block">TOTAL_REVENUE</span>
-                        <span class="text-2xl font-black text-emerald-400 block mt-1">${{ number_format($totalSales, 2) }}</span>
-                    </div>
-                    <div class="bg-slate-950/40 border border-slate-800 rounded-2xl p-5 shadow-lg">
-                        <span class="text-[9px] text-slate-500 block">CONFIRMED_ORDERS</span>
-                        <span class="text-2xl font-black text-white block mt-1">{{ $totalOrders }} runs</span>
-                    </div>
-                    <div class="bg-slate-950/40 border border-slate-800 rounded-2xl p-5 shadow-lg">
-                        <span class="text-[9px] text-slate-500 block">OUT_OF_STOCK</span>
-                        <span class="text-2xl font-black text-rose-400 block mt-1">{{ $outOfStockProducts }} units</span>
+                {{-- Admin Profile Header --}}
+                <div class="p-5 border-b border-slate-100 dark:border-slate-800">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center text-white font-bold text-base shadow-lg shadow-violet-500/20 shrink-0">
+                            {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                        </div>
+                        <div class="overflow-hidden">
+                            <p class="text-sm font-semibold text-slate-900 dark:text-white truncate">{{ auth()->user()->name }}</p>
+                            <p class="text-xs text-slate-400 truncate">Store Administrator</p>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Recent Activity Logs widget -->
-                <div class="bg-slate-950/40 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl relative">
-                    <div class="absolute top-1.5 left-1.5 text-slate-800 font-mono text-[9px] pointer-events-none">+</div>
-                    <div class="absolute bottom-1.5 right-1.5 text-slate-800 font-mono text-[9px] pointer-events-none">+</div>
+                {{-- Navigation Items --}}
+                <nav class="p-3 space-y-0.5">
+                    @php
+                        $navItems = [
+                            ['tab' => 'overview',   'label' => 'Overview',       'icon' => 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6'],
+                            ['tab' => 'products',   'label' => 'Products',       'icon' => 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4'],
+                            ['tab' => 'orders',     'label' => 'Orders',         'icon' => 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01'],
+                            ['tab' => 'customers',  'label' => 'Customers',      'icon' => 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z'],
+                            ['tab' => 'coupons',    'label' => 'Coupons',        'icon' => 'M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z'],
+                            ['tab' => 'delivery',   'label' => 'Delivery',       'icon' => 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'],
+                            ['tab' => 'support',    'label' => 'Support',        'icon' => 'M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z'],
+                            ['tab' => 'invites',    'label' => 'Invite Admin',   'icon' => 'M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z'],
+                            ['tab' => 'logs',       'label' => 'System Logs',    'icon' => 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'],
+                        ];
+                    @endphp
 
-                    <h3 class="text-xs font-bold text-white font-mono-tech uppercase tracking-wider mb-5 select-none">// RECENT_NODE_LOGS</h3>
-                    
-                    <div class="space-y-4 font-mono-tech text-[10px]">
+                    @foreach ($navItems as $item)
+                        <button
+                            @click="activeTab = '{{ $item['tab'] }}'"
+                            :class="activeTab === '{{ $item['tab'] }}'
+                                ? 'bg-violet-50 dark:bg-violet-500/10 text-violet-700 dark:text-violet-400'
+                                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'"
+                            class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 group"
+                        >
+                            <svg class="w-5 h-5 shrink-0 transition-colors"
+                                 :class="activeTab === '{{ $item['tab'] }}' ? 'text-violet-600 dark:text-violet-400' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300'"
+                                 fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="{{ $item['icon'] }}" />
+                            </svg>
+                            <span>{{ $item['label'] }}</span>
+                            <span x-show="activeTab === '{{ $item['tab'] }}'" class="ml-auto w-1.5 h-1.5 rounded-full bg-violet-500"></span>
+                        </button>
+                    @endforeach
+                </nav>
+
+                {{-- Divider + Logout --}}
+                <div class="p-3 border-t border-slate-100 dark:border-slate-800">
+                    <a href="{{ route('home') }}"
+                       class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-all duration-150 group">
+                        <svg class="w-5 h-5 shrink-0 text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                        </svg>
+                        <span>Back to Store</span>
+                    </a>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit"
+                                class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-all duration-150 group">
+                            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                            </svg>
+                            <span>Sign Out</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </aside>
+
+        {{-- ===================== MAIN CONTENT ===================== --}}
+        <div class="flex-1 min-w-0 space-y-6">
+
+            {{-- ===== 1. OVERVIEW TAB ===== --}}
+            <div x-show="activeTab === 'overview'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" class="space-y-6">
+
+                {{-- Page Title --}}
+                <div>
+                    <h1 class="text-xl font-bold text-slate-900 dark:text-white">Dashboard Overview</h1>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Welcome back. Here's what's happening in your store.</p>
+                </div>
+
+                {{-- Stats Cards --}}
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Total Revenue</span>
+                            <div class="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center">
+                                <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            </div>
+                        </div>
+                        <p class="text-2xl font-bold text-slate-900 dark:text-white">${{ number_format($totalSales, 2) }}</p>
+                        <p class="text-xs text-emerald-600 dark:text-emerald-400 mt-1 font-medium">Confirmed sales</p>
+                    </div>
+                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Total Orders</span>
+                            <div class="w-8 h-8 rounded-lg bg-violet-50 dark:bg-violet-500/10 flex items-center justify-center">
+                                <svg class="w-4 h-4 text-violet-600 dark:text-violet-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
+                            </div>
+                        </div>
+                        <p class="text-2xl font-bold text-slate-900 dark:text-white">{{ $totalOrders }}</p>
+                        <p class="text-xs text-violet-600 dark:text-violet-400 mt-1 font-medium">Confirmed orders</p>
+                    </div>
+                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Out of Stock</span>
+                            <div class="w-8 h-8 rounded-lg bg-rose-50 dark:bg-rose-500/10 flex items-center justify-center">
+                                <svg class="w-4 h-4 text-rose-500 dark:text-rose-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                            </div>
+                        </div>
+                        <p class="text-2xl font-bold text-slate-900 dark:text-white">{{ $outOfStockProducts }}</p>
+                        <p class="text-xs text-rose-500 dark:text-rose-400 mt-1 font-medium">Products need restocking</p>
+                    </div>
+                </div>
+
+                {{-- Recent Activity --}}
+                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm">
+                    <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800">
+                        <h2 class="text-sm font-semibold text-slate-900 dark:text-white">Recent Activity</h2>
+                        <p class="text-xs text-slate-400 mt-0.5">Latest events across the store</p>
+                    </div>
+                    <div class="divide-y divide-slate-100 dark:divide-slate-800">
                         @forelse ($recentActivity as $log)
-                            <div class="p-3 bg-slate-900/40 border border-slate-850 rounded-xl flex items-center justify-between gap-4">
-                                <div>
-                                    <span class="text-emerald-400 font-bold block">{{ strtoupper($log->event) }}</span>
-                                    <span class="text-slate-400 block mt-0.5">{{ $log->description }}</span>
+                            <div class="px-6 py-4 flex items-start justify-between gap-4">
+                                <div class="flex items-start gap-3">
+                                    <div class="mt-0.5 w-2 h-2 rounded-full bg-violet-500 shrink-0"></div>
+                                    <div>
+                                        <p class="text-sm font-medium text-slate-900 dark:text-white capitalize">{{ $log->event }}</p>
+                                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{{ $log->description }}</p>
+                                    </div>
                                 </div>
                                 <div class="text-right shrink-0">
-                                    <span class="text-slate-600 block">{{ $log->created_at->format('Y-m-d H:i:s') }}</span>
-                                    <span class="text-slate-500 block text-[9px]">IP: {{ $log->ip_address }}</span>
+                                    <p class="text-xs text-slate-400">{{ $log->created_at->format('M d, H:i') }}</p>
+                                    <p class="text-xs text-slate-500 mt-0.5">{{ $log->ip_address }}</p>
                                 </div>
                             </div>
                         @empty
-                            <p class="text-slate-500 text-center py-6 select-none">No system logs collected yet.</p>
+                            <div class="px-6 py-10 text-center">
+                                <svg class="w-10 h-10 text-slate-300 dark:text-slate-700 mx-auto mb-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                                <p class="text-sm text-slate-400">No activity logs yet.</p>
+                            </div>
                         @endforelse
                     </div>
                 </div>
             </div>
 
-            <!-- 2. Product CRUD Tab -->
+            {{-- ===== 2. PRODUCTS TAB ===== --}}
             @isset($products)
-            <div x-show="activeTab === 'products'" x-transition class="space-y-6">
-                <!-- A. Products List Table -->
-                <div class="bg-slate-950/40 border border-slate-800 rounded-3xl p-6 shadow-2xl relative">
-                    <div class="absolute top-1.5 left-1.5 text-slate-800 font-mono text-[9px] pointer-events-none">+</div>
-                    <div class="absolute bottom-1.5 right-1.5 text-slate-800 font-mono text-[9px] pointer-events-none">+</div>
+            <div x-show="activeTab === 'products'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" class="space-y-6" style="display:none;">
 
-                    <h2 class="text-xs font-bold text-white uppercase tracking-wider font-mono-tech mb-6 select-none">// PRODUCTS_INDEX_DIR</h2>
+                {{-- Page Title --}}
+                <div>
+                    <h1 class="text-xl font-bold text-slate-900 dark:text-white">Products</h1>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Manage your product catalogue.</p>
+                </div>
 
+                {{-- Products Table --}}
+                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
+                    <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800">
+                        <h2 class="text-sm font-semibold text-slate-900 dark:text-white">All Products</h2>
+                    </div>
                     <div class="overflow-x-auto">
-                        <table class="w-full text-xs font-mono-tech text-slate-300">
+                        <table class="w-full text-sm text-slate-600 dark:text-slate-300">
                             <thead>
-                                <tr class="border-b border-slate-800 text-slate-500 text-left">
-                                    <th class="pb-3 uppercase">Product</th>
-                                    <th class="pb-3 uppercase">Category</th>
-                                    <th class="pb-3 uppercase">Price / Cost</th>
-                                    <th class="pb-3 uppercase text-center">Stock</th>
-                                    <th class="pb-3 uppercase text-right">Actions</th>
+                                <tr class="bg-slate-50 dark:bg-slate-800/50 text-left">
+                                    <th class="px-6 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Product</th>
+                                    <th class="px-6 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Category</th>
+                                    <th class="px-6 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Price / Cost</th>
+                                    <th class="px-6 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-center">Stock</th>
+                                    <th class="px-6 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-right">Action</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-slate-900">
+                            <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
                                 @foreach ($products as $prod)
-                                    <tr class="group">
-                                        <td class="py-3.5 pr-3">
+                                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
+                                        <td class="px-6 py-4">
                                             <div class="flex items-center gap-3">
-                                                <img src="{{ $prod->primary_image }}" alt="img" class="w-8 h-8 object-cover rounded bg-slate-950 border border-slate-800" />
+                                                <img src="{{ $prod->primary_image }}" alt="{{ $prod->name }}" class="w-9 h-9 object-cover rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
                                                 <div>
-                                                    <span class="font-bold text-white block group-hover:text-emerald-400 transition">{{ $prod->name }}</span>
-                                                    <span class="text-[10px] text-slate-500 block">COL: {{ $prod->color ?? 'None' }} // UNT: {{ $prod->unit }}</span>
+                                                    <p class="font-semibold text-slate-900 dark:text-white">{{ $prod->name }}</p>
+                                                    <p class="text-xs text-slate-400 mt-0.5">{{ $prod->color ?? 'No color' }} &middot; {{ $prod->unit }}</p>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td class="py-3.5 px-3 text-slate-400">{{ $prod->category->name }}</td>
-                                        <td class="py-3.5 px-3">
-                                            <span class="text-white font-bold">${{ number_format($prod->price, 2) }}</span>
-                                            <span class="text-[10px] text-slate-600 block">Cost: ${{ number_format($prod->cost, 2) }}</span>
+                                        <td class="px-6 py-4 text-slate-500 dark:text-slate-400">{{ $prod->category->name }}</td>
+                                        <td class="px-6 py-4">
+                                            <p class="font-semibold text-slate-900 dark:text-white">${{ number_format($prod->price, 2) }}</p>
+                                            <p class="text-xs text-slate-400 mt-0.5">Cost: ${{ number_format($prod->cost, 2) }}</p>
                                         </td>
-                                        <td class="py-3.5 px-3 text-center">
-                                            <span class="px-2 py-0.5 rounded border font-bold
-                                                   {{ $prod->stock <= 0 ? 'border-rose-500/20 bg-rose-500/10 text-rose-400' : 'border-slate-800 text-slate-300' }}">
+                                        <td class="px-6 py-4 text-center">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $prod->stock <= 0 ? 'bg-rose-100 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300' }}">
                                                 {{ $prod->stock }}
                                             </span>
                                         </td>
-                                        <td class="py-3.5 pl-3 text-right">
+                                        <td class="px-6 py-4 text-right">
                                             <form method="POST" action="{{ route('admin.products.destroy', ['product' => $prod->id]) }}" class="inline">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="px-2 py-1 border border-transparent hover:border-rose-500/30 hover:bg-rose-950/20 rounded text-rose-500 font-bold tracking-widest text-[9px] transition uppercase">
-                                                    Purge
+                                                <button type="submit" class="text-xs font-medium text-rose-500 hover:text-rose-700 dark:hover:text-rose-400 transition px-3 py-1.5 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-500/10">
+                                                    Delete
                                                 </button>
                                             </form>
                                         </td>
@@ -171,143 +217,127 @@
                     </div>
                 </div>
 
-                <!-- B. Create Product Form -->
-                <div class="bg-slate-950/40 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl relative">
-                    <div class="absolute top-1.5 left-1.5 text-slate-800 font-mono text-[9px] pointer-events-none">+</div>
-                    <div class="absolute bottom-1.5 right-1.5 text-slate-800 font-mono text-[9px] pointer-events-none">+</div>
-
-                    <h2 class="text-xs font-bold text-white uppercase tracking-wider font-mono-tech mb-6 select-none">// ADD_NEW_PRODUCT_RECORD</h2>
-
-                    <form method="POST" action="{{ route('admin.products.store') }}" enctype="multipart/form-data" class="space-y-4">
-                        @csrf
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <x-input-label for="category_id" :value="__('Select Category')" />
-                                <select id="category_id" name="category_id" required
-                                        class="block mt-1 w-full bg-slate-950 border-slate-800 text-slate-300 text-xs rounded-xl focus:border-emerald-500 focus:ring-emerald-500">
-                                    @foreach ($categories as $cat)
-                                        <option value="{{ $cat->id }}">{{ $cat->name }}</option>
-                                    @endforeach
-                                </select>
+                {{-- Add Product Form --}}
+                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm">
+                    <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800">
+                        <h2 class="text-sm font-semibold text-slate-900 dark:text-white">Add New Product</h2>
+                        <p class="text-xs text-slate-400 mt-0.5">Fill in the details below to add a product to the catalogue.</p>
+                    </div>
+                    <div class="p-6">
+                        <form method="POST" action="{{ route('admin.products.store') }}" enctype="multipart/form-data" class="space-y-4">
+                            @csrf
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <x-input-label for="category_id" :value="__('Category')" />
+                                    <select id="category_id" name="category_id" required class="block mt-1 w-full bg-white dark:bg-slate-950 border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 text-sm rounded-xl focus:border-violet-500 focus:ring-violet-500">
+                                        @foreach ($categories as $cat)
+                                            <option value="{{ $cat->id }}">{{ $cat->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div>
+                                    <x-input-label for="prod_name" :value="__('Product Name')" />
+                                    <x-text-input id="prod_name" class="block mt-1 w-full" type="text" name="name" required placeholder="e.g. Wireless Keyboard" />
+                                </div>
                             </div>
-
-                            <div>
-                                <x-input-label for="prod_name" :value="__('Product Display Name')" />
-                                <x-text-input id="prod_name" class="block mt-1 w-full" type="text" name="name" required placeholder="e.g. CyberX Keyboard" />
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <div>
+                                    <x-input-label for="prod_price" :value="__('Retail Price ($)')" />
+                                    <x-text-input id="prod_price" class="block mt-1 w-full" type="number" step="0.01" name="price" required placeholder="0.00" />
+                                </div>
+                                <div>
+                                    <x-input-label for="prod_cost" :value="__('Cost Price ($)')" />
+                                    <x-text-input id="prod_cost" class="block mt-1 w-full" type="number" step="0.01" name="cost" required placeholder="0.00" />
+                                </div>
+                                <div>
+                                    <x-input-label for="prod_stock" :value="__('Stock Units')" />
+                                    <x-text-input id="prod_stock" class="block mt-1 w-full" type="number" name="stock" required placeholder="0" />
+                                </div>
                             </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            <div>
-                                <x-input-label for="prod_price" :value="__('Retail Price ($)')" />
-                                <x-text-input id="prod_price" class="block mt-1 w-full" type="number" step="0.01" name="price" required placeholder="0.00" />
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <div>
+                                    <x-input-label for="prod_color" :value="__('Color')" />
+                                    <x-text-input id="prod_color" class="block mt-1 w-full" type="text" name="color" placeholder="e.g. Space Gray" />
+                                </div>
+                                <div>
+                                    <x-input-label for="prod_unit" :value="__('Unit Type')" />
+                                    <x-text-input id="prod_unit" class="block mt-1 w-full" type="text" name="unit" required placeholder="e.g. pcs, box, pack" />
+                                </div>
+                                <div>
+                                    <x-input-label for="prod_status" :value="__('Status')" />
+                                    <select id="prod_status" name="status" required class="block mt-1 w-full bg-white dark:bg-slate-950 border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 text-sm rounded-xl focus:border-violet-500 focus:ring-violet-500">
+                                        <option value="active">Active</option>
+                                        <option value="inactive">Inactive</option>
+                                    </select>
+                                </div>
                             </div>
                             <div>
-                                <x-input-label for="prod_cost" :value="__('System Cost ($)')" />
-                                <x-text-input id="prod_cost" class="block mt-1 w-full" type="number" step="0.01" name="cost" required placeholder="0.00" />
+                                <x-input-label for="prod_desc" :value="__('Description')" />
+                                <textarea id="prod_desc" name="description" rows="3" required placeholder="Describe the product..."
+                                          class="block mt-1 w-full bg-white dark:bg-slate-950 border-slate-300 dark:border-slate-700 rounded-xl focus:border-violet-500 focus:ring-violet-500 text-slate-800 dark:text-slate-200 text-sm shadow-sm"></textarea>
                             </div>
                             <div>
-                                <x-input-label for="prod_stock" :value="__('System Stock Units')" />
-                                <x-text-input id="prod_stock" class="block mt-1 w-full" type="number" name="stock" required placeholder="0" />
+                                <x-input-label for="prod_images" :value="__('Product Images')" />
+                                <input id="prod_images" type="file" name="images[]" multiple class="block mt-1 w-full text-sm text-slate-500 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 rounded-xl p-2 focus:border-violet-500" />
                             </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            <div>
-                                <x-input-label for="prod_color" :value="__('Product Color Spectrum')" />
-                                <x-text-input id="prod_color" class="block mt-1 w-full" type="text" name="color" placeholder="e.g. Matte Gray" />
+                            <div class="pt-4 border-t border-slate-100 dark:border-slate-800">
+                                <x-primary-button>Add Product to Catalogue</x-primary-button>
                             </div>
-                            <div>
-                                <x-input-label for="prod_unit" :value="__('Product Packaging Unit')" />
-                                <x-text-input id="prod_unit" class="block mt-1 w-full" type="text" name="unit" required placeholder="e.g. pcs, box, packet" />
-                            </div>
-                            <div>
-                                <x-input-label for="prod_status" :value="__('Active State Status')" />
-                                <select id="prod_status" name="status" required
-                                        class="block mt-1 w-full bg-slate-950 border-slate-800 text-slate-300 text-xs rounded-xl focus:border-emerald-500 focus:ring-emerald-500">
-                                    <option value="active">Active System</option>
-                                    <option value="inactive">Inactive Hold</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div>
-                            <x-input-label for="prod_desc" :value="__('Product Specifications Details')" />
-                            <textarea id="prod_desc" name="description" rows="3" required placeholder="Specify technical properties..."
-                                      class="block mt-1 w-full bg-slate-950/80 border-slate-800 dark:border-slate-800/80 rounded-xl focus:border-emerald-500 focus:ring-emerald-500 text-slate-200 text-xs shadow-sm"></textarea>
-                        </div>
-
-                        <div>
-                            <x-input-label for="prod_images" :value="__('Upload Media Images (Multiple)')" />
-                            <input id="prod_images" type="file" name="images[]" multiple class="block mt-1 w-full text-xs text-slate-500 font-mono-tech border border-slate-800 bg-slate-950 rounded-xl p-2 focus:border-emerald-500" />
-                        </div>
-
-                        <div class="pt-2 border-t border-slate-900">
-                            <x-primary-button>
-                                {{ __('Commit Product to Catalogue') }}
-                            </x-primary-button>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
             </div>
             @endisset
 
-            <!-- 3. Orders Tab -->
-            @php
-                $allOrders = \App\Models\Order::with(['items.product', 'payment'])->latest()->get();
-            @endphp
-            <div x-show="activeTab === 'orders'" x-transition class="space-y-6" style="display: none;">
-                <div class="bg-slate-950/40 border border-slate-800 rounded-3xl p-6 shadow-2xl relative">
-                    <div class="absolute top-1.5 left-1.5 text-slate-800 font-mono text-[9px] pointer-events-none">+</div>
-                    <div class="absolute bottom-1.5 right-1.5 text-slate-800 font-mono text-[9px] pointer-events-none">+</div>
-
-                    <h2 class="text-xs font-bold text-white uppercase tracking-wider font-mono-tech mb-6 select-none">// ORDERS_TRACKING_AND_LOGISTICS</h2>
-
+            {{-- ===== 3. ORDERS TAB ===== --}}
+            @php $allOrders = \App\Models\Order::with(['items.product', 'payment'])->latest()->get(); @endphp
+            <div x-show="activeTab === 'orders'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" class="space-y-6" style="display:none;">
+                <div>
+                    <h1 class="text-xl font-bold text-slate-900 dark:text-white">Orders</h1>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Track and manage all customer orders.</p>
+                </div>
+                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
+                    <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800">
+                        <h2 class="text-sm font-semibold text-slate-900 dark:text-white">All Orders</h2>
+                    </div>
                     <div class="overflow-x-auto">
-                        <table class="w-full text-xs font-mono-tech text-slate-300">
+                        <table class="w-full text-sm text-slate-600 dark:text-slate-300">
                             <thead>
-                                <tr class="border-b border-slate-800 text-slate-500 text-left">
-                                    <th class="pb-3 uppercase">Order Ref</th>
-                                    <th class="pb-3 uppercase">Client Details</th>
-                                    <th class="pb-3 uppercase">Total Captured</th>
-                                    <th class="pb-3 uppercase">Logistics State</th>
-                                    <th class="pb-3 uppercase text-right">Commit State</th>
+                                <tr class="bg-slate-50 dark:bg-slate-800/50 text-left">
+                                    <th class="px-6 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Order</th>
+                                    <th class="px-6 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Customer</th>
+                                    <th class="px-6 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Total</th>
+                                    <th class="px-6 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-right">Update</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-slate-900">
+                            <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
                                 @foreach ($allOrders as $o)
-                                    <tr>
-                                        <td class="py-3.5 pr-3 font-bold text-white">{{ $o->order_number }}</td>
-                                        <td class="py-3.5 px-3 text-slate-400">
-                                            <span class="block text-white">{{ $o->email }}</span>
-                                            <span class="block text-[10px] text-slate-500">{{ $o->phone }}</span>
+                                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
+                                        <td class="px-6 py-4 font-semibold text-slate-900 dark:text-white">{{ $o->order_number }}</td>
+                                        <td class="px-6 py-4">
+                                            <p class="font-medium text-slate-900 dark:text-white">{{ $o->email }}</p>
+                                            <p class="text-xs text-slate-400 mt-0.5">{{ $o->phone }}</p>
                                         </td>
-                                        <td class="py-3.5 px-3">
-                                            <span class="block text-white font-bold">${{ number_format($o->total_amount, 2) }}</span>
-                                            <span class="block text-[9px] text-slate-600 uppercase">Gateway: {{ $o->payment ? $o->payment->gateway : 'pending' }}</span>
+                                        <td class="px-6 py-4">
+                                            <p class="font-semibold text-slate-900 dark:text-white">${{ number_format($o->total_amount, 2) }}</p>
+                                            <p class="text-xs text-slate-400 mt-0.5 capitalize">via {{ $o->payment ? $o->payment->gateway : 'pending' }}</p>
                                         </td>
-                                        <td class="py-3.5 px-3">
-                                            <span class="px-2 py-0.5 text-[9px] font-bold border rounded uppercase tracking-wider
-                                                   {{ in_array($o->status, ['paid', 'processing', 'shipped', 'delivered']) ? 'border-emerald-500/20 bg-emerald-500/10 text-emerald-400' : 'border-rose-500/20 bg-rose-500/10 text-rose-400' }}">
-                                                {{ $o->status }}
+                                        <td class="px-6 py-4">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                                {{ in_array($o->status, ['paid', 'processing', 'shipped', 'delivered']) ? 'bg-emerald-100 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400' : 'bg-rose-100 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400' }}">
+                                                {{ ucfirst($o->status) }}
                                             </span>
                                         </td>
-                                        <td class="py-3.5 pl-3 text-right">
-                                            <form method="POST" action="{{ route('admin.orders.status', ['order' => $o->id]) }}" class="flex gap-2 justify-end">
+                                        <td class="px-6 py-4 text-right">
+                                            <form method="POST" action="{{ route('admin.orders.status', ['order' => $o->id]) }}" class="flex gap-2 justify-end items-center">
                                                 @csrf
-                                                <select name="status" class="bg-slate-950 border border-slate-850 text-slate-400 text-[10px] rounded-lg p-1 focus:border-emerald-500 focus:outline-none">
-                                                    <option value="pending" {{ $o->status === 'pending' ? 'selected' : '' }}>Pending</option>
-                                                    <option value="paid" {{ $o->status === 'paid' ? 'selected' : '' }}>Paid</option>
-                                                    <option value="processing" {{ $o->status === 'processing' ? 'selected' : '' }}>Processing</option>
-                                                    <option value="shipped" {{ $o->status === 'shipped' ? 'selected' : '' }}>Shipped</option>
-                                                    <option value="delivered" {{ $o->status === 'delivered' ? 'selected' : '' }}>Delivered</option>
-                                                    <option value="cancelled" {{ $o->status === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
-                                                    <option value="failed_payment" {{ $o->status === 'failed_payment' ? 'selected' : '' }}>Failed</option>
+                                                <select name="status" class="bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs rounded-lg px-2 py-1.5 focus:border-violet-500 focus:outline-none">
+                                                    @foreach (['pending','paid','processing','shipped','delivered','cancelled','failed_payment'] as $s)
+                                                        <option value="{{ $s }}" {{ $o->status === $s ? 'selected' : '' }}>{{ ucfirst(str_replace('_',' ',$s)) }}</option>
+                                                    @endforeach
                                                 </select>
-                                                <button type="submit" class="px-2 py-1 border border-slate-850 hover:border-emerald-500/30 rounded text-slate-300 hover:text-emerald-400 text-[9px] font-bold tracking-wider uppercase transition">
-                                                    Sync
-                                                </button>
+                                                <button type="submit" class="px-3 py-1.5 border border-slate-300 dark:border-slate-700 hover:border-violet-500 rounded-lg text-xs font-medium text-slate-600 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 transition">Save</button>
                                             </form>
                                         </td>
                                     </tr>
@@ -318,48 +348,47 @@
                 </div>
             </div>
 
-            <!-- 4. Customers Tab -->
-            @php
-                $customers = \App\Models\User::where('role', 'user')->latest()->get();
-            @endphp
-            <div x-show="activeTab === 'customers'" x-transition class="space-y-6" style="display: none;">
-                <div class="bg-slate-950/40 border border-slate-800 rounded-3xl p-6 shadow-2xl relative">
-                    <div class="absolute top-1.5 left-1.5 text-slate-800 font-mono text-[9px] pointer-events-none">+</div>
-                    <div class="absolute bottom-1.5 right-1.5 text-slate-800 font-mono text-[9px] pointer-events-none">+</div>
-
-                    <h2 class="text-xs font-bold text-white uppercase tracking-wider font-mono-tech mb-6 select-none">// CUSTOMERS_MEMBERSHIP_DIRECTORY</h2>
-
+            {{-- ===== 4. CUSTOMERS TAB ===== --}}
+            @php $customers = \App\Models\User::where('role', 'user')->latest()->get(); @endphp
+            <div x-show="activeTab === 'customers'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" class="space-y-6" style="display:none;">
+                <div>
+                    <h1 class="text-xl font-bold text-slate-900 dark:text-white">Customers</h1>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">View and manage customer accounts.</p>
+                </div>
+                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
+                    <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800">
+                        <h2 class="text-sm font-semibold text-slate-900 dark:text-white">Registered Customers</h2>
+                    </div>
                     <div class="overflow-x-auto">
-                        <table class="w-full text-xs font-mono-tech text-slate-300">
+                        <table class="w-full text-sm text-slate-600 dark:text-slate-300">
                             <thead>
-                                <tr class="border-b border-slate-800 text-slate-500 text-left">
-                                    <th class="pb-3 uppercase">Customer</th>
-                                    <th class="pb-3 uppercase">Phone</th>
-                                    <th class="pb-3 uppercase">Address</th>
-                                    <th class="pb-3 uppercase">Active State</th>
-                                    <th class="pb-3 uppercase text-right">Commit State</th>
+                                <tr class="bg-slate-50 dark:bg-slate-800/50 text-left">
+                                    <th class="px-6 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Customer</th>
+                                    <th class="px-6 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Phone</th>
+                                    <th class="px-6 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Address</th>
+                                    <th class="px-6 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-right">Action</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-slate-900">
+                            <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
                                 @foreach ($customers as $c)
-                                    <tr>
-                                        <td class="py-3.5 pr-3 font-bold text-white">
-                                            <span>{{ $c->name }}</span>
-                                            <span class="block text-[10px] text-slate-500 font-normal mt-0.5">{{ $c->email }}</span>
+                                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
+                                        <td class="px-6 py-4">
+                                            <p class="font-semibold text-slate-900 dark:text-white">{{ $c->name }}</p>
+                                            <p class="text-xs text-slate-400 mt-0.5">{{ $c->email }}</p>
                                         </td>
-                                        <td class="py-3.5 px-3 text-slate-400">{{ $c->phone ?? 'N/A' }}</td>
-                                        <td class="py-3.5 px-3 text-slate-400 max-w-[150px] truncate">{{ $c->address ?? 'N/A' }}</td>
-                                        <td class="py-3.5 px-3">
-                                            <span class="px-2.5 py-0.5 text-[9px] font-bold border rounded uppercase tracking-wider
-                                                   {{ $c->status === 'active' ? 'border-emerald-500/20 bg-emerald-500/10 text-emerald-400' : 'border-rose-500/20 bg-rose-500/10 text-rose-400' }}">
-                                                {{ $c->status }}
+                                        <td class="px-6 py-4 text-slate-500 dark:text-slate-400">{{ $c->phone ?? '—' }}</td>
+                                        <td class="px-6 py-4 text-slate-500 dark:text-slate-400 max-w-[180px] truncate">{{ $c->address ?? '—' }}</td>
+                                        <td class="px-6 py-4">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $c->status === 'active' ? 'bg-emerald-100 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400' : 'bg-rose-100 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400' }}">
+                                                {{ ucfirst($c->status) }}
                                             </span>
                                         </td>
-                                        <td class="py-3.5 pl-3 text-right">
+                                        <td class="px-6 py-4 text-right">
                                             <form method="POST" action="{{ route('admin.customers.toggle', ['user' => $c->id]) }}" class="inline">
                                                 @csrf
-                                                <button type="submit" class="px-2 py-1 border border-slate-850 hover:border-slate-700 rounded text-slate-400 hover:text-white text-[9px] font-bold uppercase transition">
-                                                    {{ $c->status === 'active' ? 'Disable Account' : 'Enable Account' }}
+                                                <button type="submit" class="text-xs font-medium {{ $c->status === 'active' ? 'text-rose-500 hover:text-rose-700' : 'text-emerald-600 hover:text-emerald-700' }} transition px-3 py-1.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800">
+                                                    {{ $c->status === 'active' ? 'Disable' : 'Enable' }}
                                                 </button>
                                             </form>
                                         </td>
@@ -371,51 +400,43 @@
                 </div>
             </div>
 
-            <!-- 5. Coupons Tab -->
-            @php
-                $coupons = \App\Models\Coupon::latest()->get();
-            @endphp
-            <div x-show="activeTab === 'coupons'" x-transition class="space-y-6" style="display: none;">
-                <!-- A. Coupons List -->
-                <div class="bg-slate-950/40 border border-slate-800 rounded-3xl p-6 shadow-2xl relative">
-                    <div class="absolute top-1.5 left-1.5 text-slate-800 font-mono text-[9px] pointer-events-none">+</div>
-                    <div class="absolute bottom-1.5 right-1.5 text-slate-800 font-mono text-[9px] pointer-events-none">+</div>
-
-                    <h2 class="text-xs font-bold text-white uppercase tracking-wider font-mono-tech mb-6 select-none">// PROMOTIONAL_COUPON_CODES</h2>
-
+            {{-- ===== 5. COUPONS TAB ===== --}}
+            @php $coupons = \App\Models\Coupon::latest()->get(); @endphp
+            <div x-show="activeTab === 'coupons'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" class="space-y-6" style="display:none;">
+                <div>
+                    <h1 class="text-xl font-bold text-slate-900 dark:text-white">Coupons</h1>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Create and manage discount coupon codes.</p>
+                </div>
+                {{-- Coupon List --}}
+                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
+                    <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800">
+                        <h2 class="text-sm font-semibold text-slate-900 dark:text-white">Active Coupons</h2>
+                    </div>
                     <div class="overflow-x-auto">
-                        <table class="w-full text-xs font-mono-tech text-slate-300">
+                        <table class="w-full text-sm text-slate-600 dark:text-slate-300">
                             <thead>
-                                <tr class="border-b border-slate-800 text-slate-500 text-left">
-                                    <th class="pb-3 uppercase">Coupon Code</th>
-                                    <th class="pb-3 uppercase">Discount Value</th>
-                                    <th class="pb-3 uppercase">Usage Stats</th>
-                                    <th class="pb-3 uppercase">Expiry Node</th>
-                                    <th class="pb-3 uppercase text-right">Purge</th>
+                                <tr class="bg-slate-50 dark:bg-slate-800/50 text-left">
+                                    <th class="px-6 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Code</th>
+                                    <th class="px-6 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Discount</th>
+                                    <th class="px-6 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Usage</th>
+                                    <th class="px-6 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Expires</th>
+                                    <th class="px-6 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-right">Action</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-slate-900">
+                            <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
                                 @foreach ($coupons as $cp)
-                                    <tr>
-                                        <td class="py-3.5 pr-3 font-bold text-white uppercase tracking-wider">{{ $cp->code }}</td>
-                                        <td class="py-3.5 px-3 text-emerald-400 font-bold">
-                                            @if ($cp->type === 'percentage')
-                                                {{ $cp->value }}% Off
-                                            @else
-                                                ${{ $cp->value }} Off
-                                            @endif
+                                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
+                                        <td class="px-6 py-4 font-mono font-bold text-slate-900 dark:text-white tracking-wider">{{ $cp->code }}</td>
+                                        <td class="px-6 py-4 font-semibold text-emerald-600 dark:text-emerald-400">
+                                            {{ $cp->type === 'percentage' ? $cp->value . '% Off' : '$' . $cp->value . ' Off' }}
                                         </td>
-                                        <td class="py-3.5 px-3 text-slate-400">
-                                            Used: {{ $cp->used_count }} / {{ $cp->usage_limit ?? 'Infinite' }}
-                                        </td>
-                                        <td class="py-3.5 px-3 text-slate-500">{{ $cp->expiry_date }}</td>
-                                        <td class="py-3.5 pl-3 text-right">
+                                        <td class="px-6 py-4 text-slate-500 dark:text-slate-400">{{ $cp->used_count }} / {{ $cp->usage_limit ?? '∞' }}</td>
+                                        <td class="px-6 py-4 text-slate-500 dark:text-slate-400">{{ $cp->expiry_date }}</td>
+                                        <td class="px-6 py-4 text-right">
                                             <form method="POST" action="{{ route('admin.coupons.destroy', ['coupon' => $cp->id]) }}" class="inline">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="px-2 py-1 border border-transparent hover:border-rose-500/30 hover:bg-rose-950/20 rounded text-rose-500 font-bold tracking-widest text-[9px] transition uppercase">
-                                                    Purge
-                                                </button>
+                                                <button type="submit" class="text-xs font-medium text-rose-500 hover:text-rose-700 transition px-3 py-1.5 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-500/10">Delete</button>
                                             </form>
                                         </td>
                                     </tr>
@@ -424,242 +445,214 @@
                         </table>
                     </div>
                 </div>
-
-                <!-- B. Create Coupon Form -->
-                <div class="bg-slate-950/40 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl relative">
-                    <div class="absolute top-1.5 left-1.5 text-slate-800 font-mono text-[9px] pointer-events-none">+</div>
-                    <div class="absolute bottom-1.5 right-1.5 text-slate-800 font-mono text-[9px] pointer-events-none">+</div>
-
-                    <h2 class="text-xs font-bold text-white uppercase tracking-wider font-mono-tech mb-6 select-none">// CREATE_DISCOUNT_NODE</h2>
-
-                    <form method="POST" action="{{ route('admin.coupons.store') }}" class="space-y-4">
-                        @csrf
-
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            <div>
-                                <x-input-label for="cp_code" :value="__('Coupon Reference Code')" />
-                                <x-text-input id="cp_code" class="block mt-1 w-full uppercase" type="text" name="code" required placeholder="LAUNCH10" />
+                {{-- Create Coupon --}}
+                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm">
+                    <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800">
+                        <h2 class="text-sm font-semibold text-slate-900 dark:text-white">Create New Coupon</h2>
+                    </div>
+                    <div class="p-6">
+                        <form method="POST" action="{{ route('admin.coupons.store') }}" class="space-y-4">
+                            @csrf
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <div>
+                                    <x-input-label for="cp_code" :value="__('Coupon Code')" />
+                                    <x-text-input id="cp_code" class="block mt-1 w-full uppercase" type="text" name="code" required placeholder="LAUNCH10" />
+                                </div>
+                                <div>
+                                    <x-input-label for="cp_type" :value="__('Discount Type')" />
+                                    <select id="cp_type" name="type" required class="block mt-1 w-full bg-white dark:bg-slate-950 border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 text-sm rounded-xl focus:border-violet-500 focus:ring-violet-500">
+                                        <option value="percentage">Percentage (%)</option>
+                                        <option value="fixed">Fixed Amount ($)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <x-input-label for="cp_value" :value="__('Value')" />
+                                    <x-text-input id="cp_value" class="block mt-1 w-full" type="number" step="0.01" name="value" required placeholder="0.00" />
+                                </div>
                             </div>
-                            <div>
-                                <x-input-label for="cp_type" :value="__('Discount Formula')" />
-                                <select id="cp_type" name="type" required
-                                        class="block mt-1 w-full bg-slate-950 border-slate-800 text-slate-300 text-xs rounded-xl focus:border-emerald-500 focus:ring-emerald-500">
-                                    <option value="percentage">Percentage Rate (%)</option>
-                                    <option value="fixed">Fixed Rate Value ($)</option>
-                                </select>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <div>
+                                    <x-input-label for="cp_expiry" :value="__('Expiry Date')" />
+                                    <x-text-input id="cp_expiry" class="block mt-1 w-full" type="date" name="expiry_date" required />
+                                </div>
+                                <div>
+                                    <x-input-label for="cp_limit" :value="__('Max Usages')" />
+                                    <x-text-input id="cp_limit" class="block mt-1 w-full" type="number" name="usage_limit" placeholder="Unlimited" />
+                                </div>
+                                <div>
+                                    <x-input-label for="cp_min" :value="__('Min Order Value ($)')" />
+                                    <x-text-input id="cp_min" class="block mt-1 w-full" type="number" step="0.01" name="min_order_value" placeholder="0.00" />
+                                </div>
                             </div>
-                            <div>
-                                <x-input-label for="cp_value" :value="__('Rate Value')" />
-                                <x-text-input id="cp_value" class="block mt-1 w-full" type="number" step="0.01" name="value" required placeholder="0.00" />
+                            <div class="pt-4 border-t border-slate-100 dark:border-slate-800">
+                                <x-primary-button>Create Coupon</x-primary-button>
                             </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            <div>
-                                <x-input-label for="cp_expiry" :value="__('Expiry Limit Date')" />
-                                <x-text-input id="cp_expiry" class="block mt-1 w-full" type="date" name="expiry_date" required />
-                            </div>
-                            <div>
-                                <x-input-label for="cp_limit" :value="__('Total Max Usages')" />
-                                <x-text-input id="cp_limit" class="block mt-1 w-full" type="number" name="usage_limit" placeholder="Infinite" />
-                            </div>
-                            <div>
-                                <x-input-label for="cp_min" :value="__('Min Order Value ($)')" />
-                                <x-text-input id="cp_min" class="block mt-1 w-full" type="number" step="0.01" name="min_order_value" placeholder="0.00" />
-                            </div>
-                        </div>
-
-                        <div class="pt-2 border-t border-slate-900">
-                            <x-primary-button>
-                                {{ __('Commit Coupon Node') }}
-                            </x-primary-button>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
             </div>
 
-            <!-- 6. Delivery Fee Tab -->
-            @php
-                $deliverySettings = \App\Models\DeliveryFee::first() ?? new \App\Models\DeliveryFee(['fee' => 15.00, 'free_threshold' => 150.00]);
-            @endphp
-            <div x-show="activeTab === 'delivery'" x-transition class="space-y-6" style="display: none;">
-                <div class="bg-slate-950/40 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl relative">
-                    <div class="absolute top-1.5 left-1.5 text-slate-800 font-mono text-[9px] pointer-events-none">+</div>
-                    <div class="absolute bottom-1.5 right-1.5 text-slate-800 font-mono text-[9px] pointer-events-none">+</div>
-
-                    <h2 class="text-xs font-bold text-white uppercase tracking-wider font-mono-tech mb-6 select-none">// LOGISTICS_SHIPPING_COST_NODE</h2>
-
-                    <form method="POST" action="{{ route('admin.delivery.store') }}" class="space-y-4">
-                        @csrf
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <x-input-label for="del_fee" :value="__('Flat Delivery Rate Fee ($)')" />
-                                <x-text-input id="del_fee" class="block mt-1 w-full" type="number" step="0.01" name="fee" :value="$deliverySettings->fee" required />
+            {{-- ===== 6. DELIVERY TAB ===== --}}
+            @php $deliverySettings = \App\Models\DeliveryFee::first() ?? new \App\Models\DeliveryFee(['fee' => 15.00, 'free_threshold' => 150.00]); @endphp
+            <div x-show="activeTab === 'delivery'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" class="space-y-6" style="display:none;">
+                <div>
+                    <h1 class="text-xl font-bold text-slate-900 dark:text-white">Delivery Settings</h1>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Configure shipping fees and free delivery thresholds.</p>
+                </div>
+                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm">
+                    <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800">
+                        <h2 class="text-sm font-semibold text-slate-900 dark:text-white">Shipping Configuration</h2>
+                    </div>
+                    <div class="p-6">
+                        <form method="POST" action="{{ route('admin.delivery.store') }}" class="space-y-4">
+                            @csrf
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <x-input-label for="del_fee" :value="__('Flat Delivery Fee ($)')" />
+                                    <x-text-input id="del_fee" class="block mt-1 w-full" type="number" step="0.01" name="fee" :value="$deliverySettings->fee" required />
+                                </div>
+                                <div>
+                                    <x-input-label for="del_free" :value="__('Free Shipping Threshold ($)')" />
+                                    <x-text-input id="del_free" class="block mt-1 w-full" type="number" step="0.01" name="free_threshold" :value="$deliverySettings->free_threshold" />
+                                </div>
                             </div>
-                            <div>
-                                <x-input-label for="del_free" :value="__('Free Shipping Purchase Threshold ($)')" />
-                                <x-text-input id="del_free" class="block mt-1 w-full" type="number" step="0.01" name="free_threshold" :value="$deliverySettings->free_threshold" />
+                            <div class="pt-4 border-t border-slate-100 dark:border-slate-800">
+                                <x-primary-button>Save Delivery Settings</x-primary-button>
                             </div>
-                        </div>
-
-                        <div class="pt-2 border-t border-slate-900">
-                            <x-primary-button>
-                                {{ __('Save Delivery Settings') }}
-                            </x-primary-button>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
             </div>
 
-            <!-- 7. Support Chat Tab -->
-            @php
-                $allTickets = \App\Models\Ticket::with(['messages.user'])->latest()->get();
-            @endphp
-            <div x-show="activeTab === 'support'" x-transition class="space-y-6" style="display: none;">
-                <div class="bg-slate-950/40 border border-slate-800 rounded-3xl p-6 shadow-2xl relative">
-                    <div class="absolute top-1.5 left-1.5 text-slate-800 font-mono text-[9px] pointer-events-none">+</div>
-                    <div class="absolute bottom-1.5 right-1.5 text-slate-800 font-mono text-[9px] pointer-events-none">+</div>
-
-                    <h2 class="text-xs font-bold text-white uppercase tracking-wider font-mono-tech mb-6 select-none">// ADMIN_SUPPORT_CHAT_GATEWAY</h2>
-
-                    <div x-data="{ adminOpenTicketId: null }" class="space-y-6">
+            {{-- ===== 7. SUPPORT TAB ===== --}}
+            @php $allTickets = \App\Models\Ticket::with(['messages.user'])->latest()->get(); @endphp
+            <div x-show="activeTab === 'support'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" class="space-y-6" style="display:none;">
+                <div>
+                    <h1 class="text-xl font-bold text-slate-900 dark:text-white">Support Tickets</h1>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Respond to customer support requests.</p>
+                </div>
+                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm">
+                    <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800">
+                        <h2 class="text-sm font-semibold text-slate-900 dark:text-white">All Tickets</h2>
+                    </div>
+                    <div x-data="{ adminOpenTicketId: null }" class="divide-y divide-slate-100 dark:divide-slate-800">
                         @forelse ($allTickets as $t)
-                            <div class="p-4 bg-slate-900/50 border border-slate-800 rounded-2xl relative space-y-4">
-                                <div class="flex items-center justify-between border-b border-slate-950 pb-3">
+                            <div class="p-5">
+                                <div class="flex items-start justify-between gap-4">
                                     <div>
-                                        <span class="text-[9px] font-mono-tech text-slate-500 block">TICKET_REF</span>
-                                        <span class="text-xs font-bold text-white font-mono-tech">#{{ sprintf('%04d', $t->id) }} // {{ $t->subject }}</span>
-                                        <span class="text-[10px] text-slate-500 block mt-0.5">Author: {{ $t->user ? $t->user->email : 'Guest' }}</span>
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <span class="text-xs font-mono text-slate-400">#{{ sprintf('%04d', $t->id) }}</span>
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $t->status === 'resolved' ? 'bg-emerald-100 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400' : 'bg-violet-100 dark:bg-violet-500/10 text-violet-700 dark:text-violet-400' }}">
+                                                {{ ucfirst($t->status) }}
+                                            </span>
+                                        </div>
+                                        <p class="font-semibold text-slate-900 dark:text-white text-sm">{{ $t->subject }}</p>
+                                        <p class="text-xs text-slate-400 mt-0.5">From: {{ $t->user ? $t->user->email : 'Guest' }}</p>
                                     </div>
-                                    <div class="flex items-center gap-3">
-                                        <span class="px-2 py-0.5 text-[9px] font-bold border rounded uppercase tracking-wider
-                                               {{ $t->status === 'resolved' ? 'border-emerald-500/20 bg-emerald-500/10 text-emerald-400' : 'border-indigo-500/20 bg-indigo-500/10 text-indigo-400' }}">
-                                            {{ $t->status }}
-                                        </span>
-                                        <button @click="adminOpenTicketId = (adminOpenTicketId === {{ $t->id }} ? null : {{ $t->id }})" 
-                                                class="px-2.5 py-1 border border-slate-850 hover:border-slate-700 rounded-lg bg-slate-950/40 text-[9px] font-mono-tech uppercase font-bold text-slate-400 hover:text-white transition">
-                                            <span x-text="adminOpenTicketId === {{ $t->id }} ? '[ CLOSE ]' : '[ RESPOND ]'">[ RESPOND ]</span>
-                                        </button>
-                                    </div>
+                                    <button @click="adminOpenTicketId = (adminOpenTicketId === {{ $t->id }} ? null : {{ $t->id }})"
+                                            class="px-3 py-1.5 border border-slate-200 dark:border-slate-700 hover:border-violet-400 rounded-lg text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-violet-600 dark:hover:text-violet-400 transition shrink-0">
+                                        <span x-text="adminOpenTicketId === {{ $t->id }} ? 'Close' : 'Reply'">Reply</span>
+                                    </button>
                                 </div>
 
-                                <!-- Messages Thread Drawer -->
-                                <div x-show="adminOpenTicketId === {{ $t->id }}" x-transition class="space-y-4 pt-2">
-                                    <div class="space-y-3 max-h-[200px] overflow-y-auto pr-1">
+                                <div x-show="adminOpenTicketId === {{ $t->id }}" x-transition class="mt-4 space-y-4">
+                                    {{-- Messages --}}
+                                    <div class="space-y-3 max-h-60 overflow-y-auto">
                                         @foreach ($t->messages as $msg)
-                                            <div class="p-3 border rounded-xl text-xs space-y-1 relative overflow-hidden
-                                                        {{ $msg->user_id === auth()->id() ? 'border-indigo-500/10 bg-indigo-500/5 ml-8' : 'border-slate-800 bg-slate-950/40 mr-8' }}">
-                                                <div class="flex justify-between items-center text-[9px] font-mono-tech select-none">
-                                                    <span class="{{ $msg->user_id === auth()->id() ? 'text-indigo-400' : 'text-slate-500' }}">
-                                                        {{ $msg->user_id === auth()->id() ? '// SYSTEM_ADMIN' : '// CUSTOMER' }}
-                                                    </span>
-                                                    <span class="text-slate-600">{{ $msg->created_at->diffForHumans() }}</span>
-                                                </div>
-                                                <p class="text-slate-300 leading-relaxed font-sans">{{ $msg->message }}</p>
+                                            <div class="p-3 rounded-xl text-sm {{ $msg->user_id === auth()->id() ? 'bg-violet-50 dark:bg-violet-500/10 ml-8 text-violet-900 dark:text-violet-200' : 'bg-slate-50 dark:bg-slate-800 mr-8 text-slate-700 dark:text-slate-300' }}">
+                                                <p class="text-xs font-semibold mb-1 {{ $msg->user_id === auth()->id() ? 'text-violet-600 dark:text-violet-400' : 'text-slate-400' }}">
+                                                    {{ $msg->user_id === auth()->id() ? 'Admin' : 'Customer' }} &middot; {{ $msg->created_at->diffForHumans() }}
+                                                </p>
+                                                <p>{{ $msg->message }}</p>
                                             </div>
                                         @endforeach
                                     </div>
-
-                                    <!-- Reply form -->
-                                    <form method="POST" action="{{ route('admin.tickets.reply', ['ticket' => $t->id]) }}" class="space-y-3 pt-3 border-t border-slate-950">
+                                    {{-- Reply Form --}}
+                                    <form method="POST" action="{{ route('admin.tickets.reply', ['ticket' => $t->id]) }}" class="space-y-3 pt-3 border-t border-slate-100 dark:border-slate-800">
                                         @csrf
-                                        
-                                        <div class="flex items-center justify-between text-xs font-mono-tech">
-                                            <span class="text-slate-500 uppercase select-none">// RESOLUTION_NODE_STATE</span>
-                                            <select name="status" class="bg-slate-950 border border-slate-850 text-slate-400 text-[10px] rounded-lg p-1 focus:border-emerald-500 focus:outline-none">
+                                        <div class="flex items-center justify-between">
+                                            <label class="text-xs font-medium text-slate-500 dark:text-slate-400">Set ticket status</label>
+                                            <select name="status" class="bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-xs rounded-lg px-2 py-1.5 focus:border-violet-500 focus:outline-none">
                                                 <option value="open" {{ $t->status === 'open' ? 'selected' : '' }}>Keep Open</option>
                                                 <option value="pending" {{ $t->status === 'pending' ? 'selected' : '' }}>Set Pending</option>
                                                 <option value="resolved" {{ $t->status === 'resolved' ? 'selected' : '' }}>Mark Resolved</option>
                                             </select>
                                         </div>
-
                                         <div class="flex gap-2">
-                                            <div class="flex-grow">
-                                                <x-text-input name="message" class="block w-full py-2 font-mono-tech text-xs" required placeholder="Type reply message..." />
-                                            </div>
-                                            <x-primary-button class="py-2 px-4 select-none shrink-0 font-mono-tech text-[10px]">
-                                                Transmit
-                                            </x-primary-button>
+                                            <x-text-input name="message" class="block flex-1 py-2 text-sm" required placeholder="Type your reply..." />
+                                            <x-primary-button class="shrink-0">Send</x-primary-button>
                                         </div>
                                     </form>
                                 </div>
                             </div>
                         @empty
-                            <div class="text-center py-10 border border-slate-800 border-dashed rounded-2xl select-none">
-                                <p class="text-xs font-mono-tech text-slate-500 uppercase tracking-widest">// NO_TICKET_LOGS</p>
-                                <p class="text-xs text-slate-600 mt-1">There are no customer support threads logged in directories.</p>
+                            <div class="px-6 py-12 text-center">
+                                <svg class="w-10 h-10 text-slate-300 dark:text-slate-700 mx-auto mb-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
+                                <p class="text-sm text-slate-400">No support tickets yet.</p>
                             </div>
                         @endforelse
                     </div>
                 </div>
             </div>
 
-            <!-- 8. Invite Admin Tab -->
-            @php
-                $invites = \App\Models\AdminInvite::latest()->get();
-            @endphp
-            <div x-show="activeTab === 'invites'" x-transition class="space-y-6" style="display: none;">
-                <!-- A. invites Form -->
-                <div class="bg-slate-950/40 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl relative">
-                    <div class="absolute top-1.5 left-1.5 text-slate-800 font-mono text-[9px] pointer-events-none">+</div>
-                    <div class="absolute bottom-1.5 right-1.5 text-slate-800 font-mono text-[9px] pointer-events-none">+</div>
-
-                    <h2 class="text-xs font-bold text-white uppercase tracking-wider font-mono-tech mb-6 select-none">// INVITE_ADMINISTRATIVE_OPERATOR</h2>
-
-                    <form method="POST" action="{{ route('admin.invites.store') }}" class="space-y-4">
-                        @csrf
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <x-input-label for="inv_name" :value="__('Operator Name')" />
-                                <x-text-input id="inv_name" class="block mt-1 w-full" type="text" name="name" required placeholder="e.g. Sarah Connor" />
-                            </div>
-                            <div>
-                                <x-input-label for="inv_email" :value="__('Operator Email')" />
-                                <x-text-input id="inv_email" class="block mt-1 w-full" type="email" name="email" required placeholder="sarah@shop.com" />
-                            </div>
-                        </div>
-
-                        <div class="pt-2 border-t border-slate-900">
-                            <x-primary-button>
-                                {{ __('Generate Invite Token') }}
-                            </x-primary-button>
-                        </div>
-                    </form>
+            {{-- ===== 8. INVITE ADMIN TAB ===== --}}
+            @php $invites = \App\Models\AdminInvite::latest()->get(); @endphp
+            <div x-show="activeTab === 'invites'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" class="space-y-6" style="display:none;">
+                <div>
+                    <h1 class="text-xl font-bold text-slate-900 dark:text-white">Invite Admin</h1>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Send invite tokens to new administrators.</p>
                 </div>
-
-                <!-- B. Token list -->
-                <div class="bg-slate-950/40 border border-slate-800 rounded-3xl p-6 shadow-2xl relative">
-                    <div class="absolute top-1.5 left-1.5 text-slate-800 font-mono text-[9px] pointer-events-none">+</div>
-                    <div class="absolute bottom-1.5 right-1.5 text-slate-800 font-mono text-[9px] pointer-events-none">+</div>
-
-                    <h2 class="text-xs font-bold text-white uppercase tracking-wider font-mono-tech mb-6 select-none">// ACTIVE_INVITATION_TOKENS</h2>
-
+                {{-- Invite Form --}}
+                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm">
+                    <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800">
+                        <h2 class="text-sm font-semibold text-slate-900 dark:text-white">Generate Invite</h2>
+                    </div>
+                    <div class="p-6">
+                        <form method="POST" action="{{ route('admin.invites.store') }}" class="space-y-4">
+                            @csrf
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <x-input-label for="inv_name" :value="__('Name')" />
+                                    <x-text-input id="inv_name" class="block mt-1 w-full" type="text" name="name" required placeholder="e.g. Sarah Connor" />
+                                </div>
+                                <div>
+                                    <x-input-label for="inv_email" :value="__('Email Address')" />
+                                    <x-text-input id="inv_email" class="block mt-1 w-full" type="email" name="email" required placeholder="admin@shop.com" />
+                                </div>
+                            </div>
+                            <div class="pt-4 border-t border-slate-100 dark:border-slate-800">
+                                <x-primary-button>Generate Invite Token</x-primary-button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                {{-- Invite Tokens List --}}
+                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
+                    <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800">
+                        <h2 class="text-sm font-semibold text-slate-900 dark:text-white">Pending Invitations</h2>
+                    </div>
                     <div class="overflow-x-auto">
-                        <table class="w-full text-xs font-mono-tech text-slate-300">
+                        <table class="w-full text-sm text-slate-600 dark:text-slate-300">
                             <thead>
-                                <tr class="border-b border-slate-800 text-slate-500 text-left">
-                                    <th class="pb-3 uppercase">Name / Email</th>
-                                    <th class="pb-3 uppercase">Token ID</th>
-                                    <th class="pb-3 uppercase text-right">Expiration Limit</th>
+                                <tr class="bg-slate-50 dark:bg-slate-800/50 text-left">
+                                    <th class="px-6 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Name / Email</th>
+                                    <th class="px-6 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Token</th>
+                                    <th class="px-6 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-right">Expires</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-slate-900">
+                            <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
                                 @foreach ($invites as $inv)
-                                    <tr>
-                                        <td class="py-3.5 pr-3 font-bold text-white">
-                                            <span>{{ $inv->name }}</span>
-                                            <span class="block text-[10px] text-slate-500 font-normal mt-0.5">{{ $inv->email }}</span>
+                                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
+                                        <td class="px-6 py-4">
+                                            <p class="font-semibold text-slate-900 dark:text-white">{{ $inv->name }}</p>
+                                            <p class="text-xs text-slate-400 mt-0.5">{{ $inv->email }}</p>
                                         </td>
-                                        <td class="py-3.5 px-3 text-emerald-400 font-mono-tech select-all">
-                                            {{ $inv->token }}
-                                        </td>
-                                        <td class="py-3.5 pl-3 text-right text-slate-500 font-bold uppercase">
+                                        <td class="px-6 py-4 font-mono text-xs text-violet-600 dark:text-violet-400 select-all">{{ $inv->token }}</td>
+                                        <td class="px-6 py-4 text-right">
                                             @if ($inv->isValid())
-                                                Active // Exp {{ $inv->expires_at }}
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400">Active</span>
                                             @else
-                                                Expired
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">Expired</span>
                                             @endif
                                         </td>
                                     </tr>
@@ -670,27 +663,30 @@
                 </div>
             </div>
 
-            <!-- 9. Logs Tab -->
-            @php
-                $allLogs = \App\Models\ActivityLog::with('user')->latest()->get();
-            @endphp
-            <div x-show="activeTab === 'logs'" x-transition class="space-y-6" style="display: none;">
-                <div class="bg-slate-950/40 border border-slate-800 rounded-3xl p-6 shadow-2xl relative">
-                    <div class="absolute top-1.5 left-1.5 text-slate-800 font-mono text-[9px] pointer-events-none">+</div>
-                    <div class="absolute bottom-1.5 right-1.5 text-slate-800 font-mono text-[9px] pointer-events-none">+</div>
-
-                    <h2 class="text-xs font-bold text-white uppercase tracking-wider font-mono-tech mb-6 select-none">// COMPREHENSIVE_SYSTEM_AUDIT_LOGS</h2>
-
-                    <div class="space-y-4 max-h-[500px] overflow-y-auto pr-2 font-mono-tech text-[10px]">
+            {{-- ===== 9. SYSTEM LOGS TAB ===== --}}
+            @php $allLogs = \App\Models\ActivityLog::with('user')->latest()->get(); @endphp
+            <div x-show="activeTab === 'logs'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" class="space-y-6" style="display:none;">
+                <div>
+                    <h1 class="text-xl font-bold text-slate-900 dark:text-white">System Logs</h1>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Full activity audit trail for the store.</p>
+                </div>
+                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm">
+                    <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800">
+                        <h2 class="text-sm font-semibold text-slate-900 dark:text-white">Activity Logs</h2>
+                    </div>
+                    <div class="divide-y divide-slate-100 dark:divide-slate-800 max-h-[600px] overflow-y-auto">
                         @foreach ($allLogs as $lg)
-                            <div class="p-3 bg-slate-900/40 border border-slate-850 rounded-xl flex items-center justify-between gap-4">
-                                <div>
-                                    <span class="text-emerald-400 font-bold block">{{ strtoupper($lg->event) }}</span>
-                                    <span class="text-slate-400 block mt-0.5">{{ $lg->description }}</span>
+                            <div class="px-6 py-4 flex items-start justify-between gap-4 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
+                                <div class="flex items-start gap-3">
+                                    <div class="mt-1.5 w-2 h-2 rounded-full bg-violet-400 shrink-0"></div>
+                                    <div>
+                                        <p class="text-sm font-semibold text-slate-900 dark:text-white capitalize">{{ $lg->event }}</p>
+                                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{{ $lg->description }}</p>
+                                    </div>
                                 </div>
                                 <div class="text-right shrink-0">
-                                    <span class="text-slate-600 block">{{ $lg->created_at->format('Y-m-d H:i:s') }}</span>
-                                    <span class="text-slate-500 block text-[9px]">IP: {{ $lg->ip_address }}</span>
+                                    <p class="text-xs text-slate-400">{{ $lg->created_at->format('M d, Y H:i') }}</p>
+                                    <p class="text-xs text-slate-500 mt-0.5">{{ $lg->ip_address }}</p>
                                 </div>
                             </div>
                         @endforeach
@@ -698,6 +694,6 @@
                 </div>
             </div>
 
-        </div>
-    </div>
+        </div>{{-- end main content --}}
+    </div>{{-- end flex container --}}
 </x-store-layout>
