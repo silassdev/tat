@@ -2,49 +2,92 @@
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
-    <form method="POST" action="{{ route('login') }}">
-        @csrf
-
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+    <div x-data="{ activeTab: 'otp' }" class="w-full">
+        <!-- Technical Tabs Header -->
+        <div class="flex border-b border-slate-200 dark:border-slate-800/80 mb-6 font-mono-tech text-[10px] font-bold tracking-wider">
+            <button @click="activeTab = 'otp'" 
+                    :class="activeTab === 'otp' ? 'border-b-2 border-emerald-500 text-emerald-500' : 'text-slate-500 hover:text-slate-300'"
+                    class="flex-1 py-2 text-center transition-all duration-200 focus:outline-none uppercase">
+                [ OTP_VERIFY ]
+            </button>
+            <button @click="activeTab = 'password'" 
+                    :class="activeTab === 'password' ? 'border-b-2 border-emerald-500 text-emerald-500' : 'text-slate-500 hover:text-slate-300'"
+                    class="flex-1 py-2 text-center transition-all duration-200 focus:outline-none uppercase">
+                [ PASSWORD_ACCESS ]
+            </button>
         </div>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
+        <!-- 1. OTP Verification Form -->
+        <div x-show="activeTab === 'otp'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform -translate-x-2" x-transition:enter-end="opacity-100 transform translate-x-0">
+            <div class="mb-4 text-center">
+                <p class="text-xs text-slate-500">Perfect for guests checking out or logging in securely without a password.</p>
+            </div>
+            
+            <form method="POST" action="{{ route('otp.send') }}">
+                @csrf
 
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
+                <!-- Email Address -->
+                <div>
+                    <x-input-label for="otp_email" :value="__('Email Address')" />
+                    <x-text-input id="otp_email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" placeholder="name@domain.com" />
+                    <x-input-error :messages="$errors->get('email')" class="mt-2" />
+                </div>
 
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+                <div class="mt-6">
+                    <x-primary-button class="w-full justify-center">
+                        {{ __('Send One-Time OTP') }}
+                    </x-primary-button>
+                </div>
+            </form>
         </div>
 
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-indigo-600 shadow-sm focus:ring-indigo-500 dark:focus:ring-indigo-600 dark:focus:ring-offset-gray-800" name="remember">
-                <span class="ms-2 text-sm text-gray-600 dark:text-gray-400">{{ __('Remember me') }}</span>
-            </label>
+        <!-- 2. Standard Password Login Form -->
+        <div x-show="activeTab === 'password'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform translate-x-2" x-transition:enter-end="opacity-100 transform translate-x-0" style="display: none;">
+            <div class="mb-4 text-center">
+                <p class="text-xs text-slate-500">For returning users and administrators accessing their dashboards.</p>
+            </div>
+
+            <form method="POST" action="{{ route('login') }}">
+                @csrf
+
+                <!-- Email Address -->
+                <div>
+                    <x-input-label for="login_email" :value="__('Email Address')" />
+                    <x-text-input id="login_email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
+                    <x-input-error :messages="$errors->get('email')" class="mt-2" />
+                </div>
+
+                <!-- Password -->
+                <div class="mt-4">
+                    <x-input-label for="login_password" :value="__('Password')" />
+                    <x-text-input id="login_password" class="block mt-1 w-full" type="password" name="password" required autocomplete="current-password" />
+                    <x-input-error :messages="$errors->get('password')" class="mt-2" />
+                </div>
+
+                <!-- Remember Me -->
+                <div class="block mt-4">
+                    <label for="remember_me" class="inline-flex items-center">
+                        <input id="remember_me" type="checkbox" class="rounded dark:bg-slate-950 border-slate-700 text-emerald-500 shadow-sm focus:ring-emerald-500 focus:ring-offset-slate-900" name="remember">
+                        <span class="ms-2 text-xs text-slate-500 dark:text-slate-400">{{ __('Keep me logged in') }}</span>
+                    </label>
+                </div>
+
+                <div class="flex items-center justify-between mt-6">
+                    @if (Route::has('password.request'))
+                        <a class="underline text-xs text-slate-500 hover:text-emerald-500 rounded-md focus:outline-none" href="{{ route('password.request') }}">
+                            {{ __('Forgot credentials?') }}
+                        </a>
+                    @endif
+
+                    <x-primary-button>
+                        {{ __('Log In') }}
+                    </x-primary-button>
+                </div>
+            </form>
         </div>
+    </div>
 
-        <div class="flex items-center justify-end mt-4">
-            @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
-                </a>
-            @endif
-
-            <x-primary-button class="ms-3">
-                {{ __('Log in') }}
-            </x-primary-button>
-        </div>
-    </form>
-
+    <!-- Google OAuth Split -->
     <div class="relative flex py-5 items-center">
         <div class="flex-grow border-t border-slate-200 dark:border-slate-800"></div>
         <span class="flex-shrink mx-4 text-slate-400 dark:text-slate-500 text-[10px] font-mono-tech uppercase tracking-wider">OR</span>

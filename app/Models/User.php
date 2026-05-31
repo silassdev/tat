@@ -3,42 +3,47 @@
 namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\Models\Scopes\CompanyScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
     use HasFactory, Notifiable;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
         'name',
         'email',
         'password',
         'google_id',
-        'company_id',
         'role',
         'phone',
+        'address',
         'status',
-        'onboarded',
-        'country',
-        'state',
-        'lga',
-        'town',
-        'street',
-        'next_of_kin',
-        'gender',
-        'dob',
     ];
 
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
     protected function casts(): array
     {
         return [
@@ -47,28 +52,59 @@ class User extends Authenticatable implements MustVerifyEmail
         ];
     }
 
-    protected static function booted()
+    /**
+     * Check if user is an admin.
+     */
+    public function isAdmin(): bool
     {
-        static::addGlobalScope(new CompanyScope);
+        return $this->role === 'admin';
     }
 
-    public function company(): BelongsTo
+    /**
+     * Check if user is active.
+     */
+    public function isActive(): bool
     {
-        return $this->belongsTo(Company::class);
+        return $this->status === 'active';
     }
 
-    public function sentMessages(): HasMany
+    /**
+     * User's carts.
+     */
+    public function carts(): HasMany
     {
-        return $this->hasMany(Message::class, 'sender_id');
+        return $this->hasMany(Cart::class);
     }
 
-    public function receivedMessages(): HasMany
+    /**
+     * User's active cart.
+     */
+    public function activeCart(): HasOne
     {
-        return $this->hasMany(Message::class, 'receiver_id');
+        return $this->hasOne(Cart::class)->latestOfMany();
     }
 
-    public function notifications(): HasMany
+    /**
+     * User's orders.
+     */
+    public function orders(): HasMany
     {
-        return $this->hasMany(Notification::class);
+        return $this->hasMany(Order::class);
+    }
+
+    /**
+     * User's support tickets.
+     */
+    public function tickets(): HasMany
+    {
+        return $this->hasMany(Ticket::class);
+    }
+
+    /**
+     * User's activity logs.
+     */
+    public function activityLogs(): HasMany
+    {
+        return $this->hasMany(ActivityLog::class);
     }
 }

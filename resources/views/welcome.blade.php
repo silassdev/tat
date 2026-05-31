@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>Hausify | Technical Grid Property Management Platform</title>
+    <title>Shoper | Technical Grid Property Management Platform</title>
     <meta name="description" content="Manage rent, tenants, and maintenance through a high-performance interactive property management system.">
 
     <!-- Fonts: Outfit (Sans) and JetBrains Mono (Tech HUD) -->

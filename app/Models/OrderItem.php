@@ -6,19 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Payment extends Model
+class OrderItem extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'order_id',
-        'reference',
-        'amount',
-        'payment_method',
-        'gateway',
-        'status',
-        'paid_at',
-    ];
+    protected $fillable = ['order_id', 'product_id', 'quantity', 'price'];
 
     /**
      * Order relationship.
@@ -26,5 +18,13 @@ class Payment extends Model
     public function order(): BelongsTo
     {
         return $this->belongsTo(Order::class);
+    }
+
+    /**
+     * Product relationship.
+     */
+    public function product(): BelongsTo
+    {
+        return $this->belongsTo(Product::class);
     }
 }
