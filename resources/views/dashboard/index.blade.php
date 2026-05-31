@@ -1,21 +1,54 @@
 <x-store-layout>
-    <div x-data="{ activeSubTab: 'purchases' }" class="flex flex-col lg:flex-row gap-6 items-start">
+    <div x-data="{ activeSubTab: 'purchases', sidebarOpen: false, sidebarCollapsed: false }" class="relative lg:flex gap-6 items-start">
+
+        {{-- Mobile Backdrop Overlay --}}
+        <div x-show="sidebarOpen"
+             @click="sidebarOpen = false"
+             x-transition:enter="transition-opacity ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition-opacity ease-in duration-200"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 lg:hidden"
+             style="display: none;"></div>
 
         {{-- ===================== LEFT SIDEBAR ===================== --}}
-        <aside class="w-full lg:w-64 shrink-0">
-            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden sticky top-24">
+        <aside :class="{
+                   'translate-x-0': sidebarOpen,
+                   '-translate-x-full': !sidebarOpen,
+                   'lg:w-64': !sidebarCollapsed,
+                   'lg:w-20': sidebarCollapsed
+               }"
+               class="fixed inset-y-0 left-0 w-72 lg:w-64 lg:static lg:translate-x-0 z-50 bg-white dark:bg-slate-900 border-r lg:border border-slate-200 dark:border-slate-800 lg:rounded-2xl shadow-xl lg:shadow-sm flex flex-col justify-between transition-all duration-300 transform lg:sticky lg:top-24 shrink-0">
 
+            <div>
                 {{-- Customer Profile Header --}}
-                <div class="p-5 border-b border-slate-100 dark:border-slate-800">
-                    <div class="flex items-center gap-3">
+                <div class="p-5 border-b border-slate-100 dark:border-slate-800 flex transition-all duration-300"
+                     :class="sidebarCollapsed ? 'flex-col items-center gap-4 justify-center' : 'flex-row items-center justify-between gap-3'">
+                    <div class="flex items-center" :class="sidebarCollapsed ? 'justify-center' : 'gap-3'">
                         <div class="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-bold text-base shadow-lg shadow-emerald-500/20 shrink-0">
                             {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                         </div>
-                        <div class="overflow-hidden">
-                            <p class="text-sm font-semibold text-slate-900 dark:text-white truncate">{{ auth()->user()->name }}</p>
+                        <div class="overflow-hidden transition-all duration-300" x-show="!sidebarCollapsed">
+                            <p class="text-sm font-semibold text-slate-900 dark:text-white truncate max-w-[120px]">{{ auth()->user()->name }}</p>
                             <p class="text-xs text-slate-400 truncate">Customer Portal</p>
                         </div>
                     </div>
+
+                    {{-- Desktop Collapse Arrow button --}}
+                    <button @click="sidebarCollapsed = !sidebarCollapsed" class="hidden lg:flex p-1.5 rounded-lg border border-slate-200 dark:border-slate-800 text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+                        <svg class="w-4 h-4 transform transition-transform duration-300" :class="sidebarCollapsed ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                        </svg>
+                    </button>
+
+                    {{-- Mobile Close Button --}}
+                    <button @click="sidebarOpen = false" class="lg:hidden p-1.5 rounded-lg border border-slate-200 dark:border-slate-800 text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
                 </div>
 
                 {{-- Navigation Items --}}
@@ -30,48 +63,71 @@
 
                     @foreach ($navItems as $item)
                         <button
-                            @click="activeSubTab = '{{ $item['tab'] }}'"
+                            @click="activeSubTab = '{{ $item['tab'] }}'; if(window.innerWidth < 1024) sidebarOpen = false;"
                             :class="activeSubTab === '{{ $item['tab'] }}'
                                 ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400'
                                 : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'"
                             class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 group"
+                            :class="sidebarCollapsed ? 'justify-center px-0' : ''"
+                            title="{{ $item['label'] }}"
                         >
                             <svg class="w-5 h-5 shrink-0 transition-colors"
                                  :class="activeSubTab === '{{ $item['tab'] }}' ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300'"
                                  fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="{{ $item['icon'] }}" />
                             </svg>
-                            <span>{{ $item['label'] }}</span>
-                            <span x-show="activeSubTab === '{{ $item['tab'] }}'" class="ml-auto w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                            <span x-show="!sidebarCollapsed" x-transition>{{ $item['label'] }}</span>
+                            <span x-show="activeSubTab === '{{ $item['tab'] }}' && !sidebarCollapsed" class="ml-auto w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                         </button>
                     @endforeach
                 </nav>
+            </div>
 
-                {{-- Divider + Logout --}}
-                <div class="p-3 border-t border-slate-100 dark:border-slate-800">
-                    <a href="{{ route('home') }}"
-                       class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-all duration-150 group">
-                        <svg class="w-5 h-5 shrink-0 text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            {{-- Divider + Logout --}}
+            <div class="p-3 border-t border-slate-100 dark:border-slate-800 flex flex-col gap-1">
+                <a href="{{ route('home') }}"
+                   :class="sidebarCollapsed ? 'justify-center px-0' : ''"
+                   class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-all duration-150 group"
+                   title="Back to Store">
+                    <svg class="w-5 h-5 shrink-0 text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                    <span x-show="!sidebarCollapsed" x-transition>Back to Store</span>
+                </a>
+                <form method="POST" action="{{ route('logout') }}" class="w-full">
+                    @csrf
+                    <button type="submit"
+                            :class="sidebarCollapsed ? 'justify-center px-0' : ''"
+                            class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-all duration-150 group"
+                            title="Sign Out">
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                         </svg>
-                        <span>Back to Store</span>
-                    </a>
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit"
-                                class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-all duration-150 group">
-                            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                            </svg>
-                            <span>Sign Out</span>
-                        </button>
-                    </form>
-                </div>
+                        <span x-show="!sidebarCollapsed" x-transition>Sign Out</span>
+                    </button>
+                </form>
             </div>
         </aside>
 
         {{-- ===================== MAIN CONTENT ===================== --}}
-        <div class="flex-1 min-w-0 space-y-6">
+        <div class="flex-1 min-w-0 w-full space-y-6">
+
+            {{-- Mobile Dashboard Trigger Bar --}}
+            <div class="lg:hidden flex items-center justify-between p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm">
+                <div class="flex items-center gap-3">
+                    <button @click="sidebarOpen = true" class="p-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                    <span class="text-sm font-bold text-slate-800 dark:text-white">Dashboard Menu</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="px-2.5 py-0.5 text-[10px] font-bold border border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-full uppercase tracking-wider">
+                        Customer
+                    </span>
+                </div>
+            </div>
 
             {{-- ===== 1. PURCHASES TAB ===== --}}
             <div x-show="activeSubTab === 'purchases'"
@@ -142,7 +198,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1,0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0,1-1.12-1.243l1.264-12A1.125 1.125 0 0,1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1,1-.75 0 .375.375 0 0,1 .75 0Zm7.5 0a.375.375 0 1,1-.75 0 .375.375 0 0,1 .75 0Z" />
                                 </svg>
                                 <p class="text-sm font-semibold text-slate-900 dark:text-white">No purchases found</p>
-                                <p class="text-xs text-slate-555 dark:text-slate-400 mt-1">You haven't made any purchases yet.</p>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">You haven't made any purchases yet.</p>
                             </div>
                         @endforelse
                     </div>
@@ -178,9 +234,11 @@
                         </div>
 
                         <div>
-                            <x-input-label for="address" :value="__('Default Delivery Address')" />
+                            <x-input-label for="address" :value="__('Delivery Address (used at checkout)')" />
                             <textarea id="address" name="address" rows="3"
-                                      class="block mt-1 w-full bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl focus:border-emerald-500 focus:ring-emerald-500 text-slate-800 dark:text-slate-200 text-sm shadow-sm">{{ old('address', $user->address) }}</textarea>
+                                      class="block mt-1 w-full bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl focus:border-emerald-500 focus:ring-emerald-500 text-slate-800 dark:text-slate-200 text-sm shadow-sm"
+                                      placeholder="Enter your complete delivery address">{{ old('address', $user->address) }}</textarea>
+                            <span class="block text-[10px] text-slate-400 mt-1 uppercase font-mono-tech select-none">// THIS_ADDRESS_WILL_BE_PRE_FILLED_ON_YOUR_NEXT_CHECKOUT</span>
                         </div>
 
                         <div class="pt-4 border-t border-slate-100 dark:border-slate-800 flex justify-end">
@@ -254,7 +312,7 @@
                                             {{ $ticket->status }}
                                         </span>
                                         <button @click="openTicketId = (openTicketId === {{ $ticket->id }} ? null : {{ $ticket->id }})"
-                                                class="px-3.5 py-1.5 border border-slate-250 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-950 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition shadow-xs">
+                                                class="px-3.5 py-1.5 border border-slate-250 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-950 text-xs font-semibold text-slate-650 dark:text-slate-455 hover:text-slate-900 dark:hover:text-white transition shadow-xs">
                                             <span x-text="openTicketId === {{ $ticket->id }} ? 'Close Conversation' : 'Open Thread'">Open Thread</span>
                                         </button>
                                     </div>
@@ -282,7 +340,7 @@
                                         <form method="POST" action="{{ route('dashboard.tickets.reply', ['ticket' => $ticket->id]) }}" class="flex gap-2">
                                             @csrf
                                             <div class="flex-grow">
-                                                <x-text-input name="message" class="block w-full py-2 bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 text-slate-850 dark:text-slate-200 text-sm rounded-xl focus:border-emerald-500 focus:ring-emerald-500" required placeholder="Type reply message..." />
+                                                <x-text-input name="message" class="block w-full py-2 bg-white dark:bg-slate-950 border-slate-300 dark:border-slate-700 text-slate-855 dark:text-slate-200 text-sm rounded-xl focus:border-emerald-500 focus:ring-emerald-500" required placeholder="Type reply message..." />
                                             </div>
                                             <x-primary-button class="py-2 px-5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-slate-950 dark:text-slate-950 font-bold text-xs shrink-0 rounded-xl transition">
                                                 Reply
@@ -321,7 +379,7 @@
                         <div>
                             <x-input-label for="message" :value="__('Message Description')" />
                             <textarea id="message" name="message" rows="3" required placeholder="Provide a detailed request..."
-                                      class="block mt-1 w-full bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl focus:border-emerald-500 focus:ring-emerald-500 text-slate-800 dark:text-slate-200 text-sm shadow-sm"></textarea>
+                                      class="block mt-1 w-full bg-white dark:bg-slate-950 border border-slate-350 dark:border-slate-700 rounded-xl focus:border-emerald-500 focus:ring-emerald-500 text-slate-800 dark:text-slate-200 text-sm shadow-sm"></textarea>
                         </div>
 
                         <div class="pt-4 border-t border-slate-100 dark:border-slate-800 flex justify-end">

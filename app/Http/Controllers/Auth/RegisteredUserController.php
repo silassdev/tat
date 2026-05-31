@@ -30,6 +30,8 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        $oldSessionToken = $request->session()->getId();
+
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
@@ -45,6 +47,13 @@ class RegisteredUserController extends Controller
         event(new Registered($user));
 
         Auth::login($user);
+
+        \App\Models\Cart::mergeGuestCart($user, $oldSessionToken);
+
+        if (session()->has('checkout_redirect')) {
+            session()->forget('checkout_redirect');
+            return redirect()->route('checkout');
+        }
 
         return redirect(route('dashboard', absolute: false));
     }

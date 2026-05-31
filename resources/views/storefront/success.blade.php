@@ -82,6 +82,42 @@
             </div>
         </div>
 
+        @if (is_null($order->user_id))
+            <!-- Guest Order Claim Banner -->
+            <div class="bg-gradient-to-r from-emerald-950/20 to-teal-950/20 border border-emerald-500/30 rounded-3xl p-6 sm:p-8 text-left relative overflow-hidden shadow-emerald-950/20 shadow-2xl">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute top-1.5 left-1.5 text-emerald-500/40 font-mono text-[9px] select-none pointer-events-none">+</div>
+                <div class="absolute bottom-1.5 right-1.5 text-emerald-500/40 font-mono text-[9px] select-none pointer-events-none">+</div>
+
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 relative">
+                    <div class="space-y-2">
+                        <span class="inline-block px-2.5 py-0.5 font-mono-tech text-[9px] font-bold tracking-widest text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-md uppercase select-none">
+                            // CLAIM_ORDER_PROTOCOL
+                        </span>
+                        <h3 class="text-lg font-bold text-white tracking-tight">Claim this Order & Create Account</h3>
+                        <p class="text-xs text-slate-400 max-w-md leading-relaxed">
+                            Verify your email <strong class="text-emerald-400 font-mono-tech">{{ $order->email }}</strong> via OTP to link your order history and set up a secure password to track shipments anytime.
+                        </p>
+                    </div>
+                    <div class="shrink-0 font-mono-tech">
+                        <form method="POST" action="{{ route('order.claim') }}">
+                            @csrf
+                            <input type="hidden" name="order_number" value="{{ $order->order_number }}">
+                            <button type="submit" 
+                                    class="w-full sm:w-auto px-6 py-3.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold font-mono-tech text-xs uppercase tracking-wider rounded-xl shadow-lg transition">
+                                [ Claim Account & Verify ]
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                @if ($errors->has('claim'))
+                    <div class="mt-4 p-3 bg-red-950/20 border border-red-500/20 rounded-xl text-xs text-red-400 font-mono-tech">
+                        {{ $errors->first('claim') }}
+                    </div>
+                @endif
+            </div>
+        @endif
+
         <!-- Action options -->
         <div class="flex flex-wrap gap-4 justify-center font-mono-tech text-xs uppercase pt-4">
             <a href="{{ route('order.track', ['order_number' => $order->order_number]) }}" 

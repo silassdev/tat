@@ -184,12 +184,6 @@ class StorefrontController extends Controller
             return redirect()->route('home')->withErrors(['cart' => 'Your shopping cart is empty.']);
         }
 
-        // If guest (not logged in), prompt for OTP email validation
-        if (!Auth::check()) {
-            session(['checkout_redirect' => true]);
-            return redirect()->route('login');
-        }
-
         // Calculate delivery fees
         $deliverySettings = DeliveryFee::first() ?? new DeliveryFee(['fee' => 15.00, 'free_threshold' => 150.00]);
         $subtotal = $cart->total;
@@ -217,16 +211,19 @@ class StorefrontController extends Controller
      */
     public function placeOrder(Request $request)
     {
-        if (!Auth::check()) {
-            return redirect()->route('login');
-        }
-
-        $request->validate([
+        $rules = [
             'phone' => ['required', 'string', 'max:20'],
             'delivery_address' => ['required', 'string'],
             'payment_method' => ['required', 'string', 'in:paystack,flutterwave'],
             'notes' => ['nullable', 'string'],
-        ]);
+        ];
+
+        if (!Auth::check()) {
+            $rules['name'] = ['required', 'string', 'max:255'];
+            $rules['email'] = ['required', 'string', 'email', 'max:255'];
+        }
+
+        $request->validate($rules);
 
         $user = Auth::user();
         $cart = $this->resolveCart();
@@ -234,6 +231,18 @@ class StorefrontController extends Controller
 
         if ($cartItems->isEmpty()) {
             return redirect()->route('home');
+        }
+
+        if ($user) {
+            $user->update([
+                'address' => $request->delivery_address,
+                'phone' => $request->phone,
+            ]);
+        } else {
+            session([
+                'guest_name' => $request->name,
+                'guest_email' => $request->email,
+            ]);
         }
 
         // 1. Immediate Stock Reservation and validation
@@ -270,7 +279,7 @@ class StorefrontController extends Controller
 
             // Create Order
             $order = Order::create([
-                'user_id' => $user->id,
+                'user_id' => $user ? $user->id : null,
                 'order_number' => 'ORD-' . strtoupper(Str::random(10)),
                 'subtotal' => $subtotal,
                 'delivery_fee' => $deliveryFee,
@@ -280,7 +289,7 @@ class StorefrontController extends Controller
                 'payment_status' => 'pending',
                 'delivery_address' => $request->delivery_address,
                 'phone' => $request->phone,
-                'email' => $user->email,
+                'email' => $user ? $user->email : $request->email,
                 'notes' => $request->notes,
             ]);
 
@@ -301,7 +310,7 @@ class StorefrontController extends Controller
             DB::commit();
 
             ActivityLog::create([
-                'user_id' => $user->id,
+                'user_id' => $user ? $user->id : null,
                 'event' => 'order_placed',
                 'description' => "Order {$order->order_number} successfully placed. Total: {$order->total_amount}",
                 'ip_address' => $request->ip(),
@@ -493,5 +502,62 @@ class StorefrontController extends Controller
         }
 
         return view('storefront.track', compact('order'));
+    }
+
+    /**
+     * Display Contact view.
+     */
+    public function showContact()
+    {
+        return view('storefront.contact');
+    }
+
+    /**
+     * Handle Contact form submission.
+     */
+    public function submitContact(Request $request)
+    {
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255'],
+            'subject' => ['required', 'string', 'max:255'],
+            'message' => ['required', 'string'],
+        ]);
+
+        $adminEmail = 'admin@shop.com';
+
+        try {
+            // Send email using FQCN Mail facade
+            \Illuminate\Support\Facades\Mail::raw(
+                "A new contact message has been received from your store:\n\n" .
+                "Name: {$request->name}\n" .
+                "Email: {$request->email}\n" .
+                "Subject: {$request->subject}\n\n" .
+                "Message:\n{$request->message}",
+                function ($message) use ($request, $adminEmail) {
+                    $message->to($adminEmail)
+                        ->subject("Secure Storefront Contact: " . $request->subject)
+                        ->replyTo($request->email);
+                }
+            );
+
+            ActivityLog::create([
+                'user_id' => auth()->id(),
+                'event' => 'contact_message_sent',
+                'description' => "Contact message sent by {$request->email} subject: {$request->subject}",
+                'ip_address' => $request->ip(),
+            ]);
+
+            return back()->with('status', 'Your contact message has been sent successfully. Our admin node has been notified.');
+        } catch (\Exception $e) {
+            ActivityLog::create([
+                'user_id' => auth()->id(),
+                'event' => 'contact_message_failed',
+                'description' => "Failed to send contact message from {$request->email}. Error: " . $e->getMessage(),
+                'ip_address' => $request->ip(),
+            ]);
+
+            return back()->withInput()->withErrors(['contact' => 'Failed to transmit contact details: ' . $e->getMessage()]);
+        }
     }
 }

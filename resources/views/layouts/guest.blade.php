@@ -50,10 +50,10 @@
             <div class="mb-6">
                 <a href="/" class="flex flex-col items-center gap-2 group">
                     <div class="relative flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500 font-black text-white shadow-lg shadow-emerald-500/20 transition-all duration-300 group-hover:scale-105">
-                        H
+                        TAT
                         <div class="absolute top-0.5 left-0.5 w-1 h-1 bg-white/40 rounded-full"></div>
                     </div>
-                    <span class="font-mono-tech text-xs uppercase tracking-widest text-slate-400 dark:text-slate-500">// AUTH_GATEWAY_NODE</span>
+                    <span class="font-mono-tech text-xs uppercase tracking-widest text-slate-400 dark:text-slate-500"> SECURE LOGIN</span>
                 </a>
             </div>
 

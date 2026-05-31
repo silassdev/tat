@@ -64,7 +64,7 @@
             <nav class="hidden md:flex items-center gap-6 font-mono-tech text-xs uppercase tracking-wider">
                 <a href="{{ route('home') }}" class="text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition">Storefront</a>
                 <a href="{{ route('order.track.index') }}" class="text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition">Track Order</a>
-                <a href="#" class="text-slate-400 dark:text-slate-500 cursor-not-allowed">Support</a>
+                <a href="{{ route('contact') }}" class="text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition">Contact</a>
             </nav>
 
             <!-- Right Controls -->
@@ -150,9 +150,45 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-white/80 dark:bg-slate-950/80 border-t border-slate-200 dark:border-slate-800/80 py-8 relative z-10 text-center font-mono-tech text-xs text-slate-400 dark:text-slate-600">
-        <div class="max-w-7xl mx-auto px-4">
-            <p>&copy; {{ date('Y') }} SHOP.IO. All operations monitored securely under Node.js logs.</p>
+    <footer class="bg-white/80 dark:bg-slate-950/80 border-t border-slate-200 dark:border-slate-800/80 py-12 relative z-10 font-mono-tech text-xs text-slate-500 dark:text-slate-400">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-left border-b border-slate-200 dark:border-slate-800/80 pb-8 mb-8 select-none">
+                <!-- Branding column -->
+                <div class="space-y-3">
+                    <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 rounded-lg bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-white font-black text-xs">S</div>
+                        <span class="font-bold text-slate-900 dark:text-white uppercase tracking-wider">SHOP.IO</span>
+                    </div>
+                    <p class="text-[10px] text-slate-450 dark:text-slate-500 leading-relaxed uppercase">
+                        High-performance technical gadgets and systems with secured stock lock-in protocols.
+                    </p>
+                </div>
+                <!-- Quick links column -->
+                <div class="space-y-3">
+                    <span class="text-[10px] font-bold text-slate-400 dark:text-slate-600 uppercase tracking-widest">// QUICK_LINKS</span>
+                    <div class="flex flex-col gap-2 text-[11px] uppercase">
+                        <a href="{{ route('home') }}" class="hover:text-emerald-500 transition">Storefront Catalogue</a>
+                        <a href="{{ route('order.track.index') }}" class="hover:text-emerald-500 transition">Track Shipment Node</a>
+                        <a href="{{ route('contact') }}" class="hover:text-emerald-500 transition">Secure Contact Node</a>
+                    </div>
+                </div>
+                <!-- Legal / Server Status column -->
+                <div class="space-y-3">
+                    <span class="text-[10px] font-bold text-slate-400 dark:text-slate-600 uppercase tracking-widest">// SYSTEM_METRIC</span>
+                    <p class="text-[10px] text-slate-450 dark:text-slate-500 leading-relaxed uppercase">
+                        OPERATIONAL STATUS: ACTIVE<br>
+                        DB PROTOCOL: ENCRYPTED<br>
+                        SECURE GATEWAY NODE: ONLINE
+                    </p>
+                </div>
+            </div>
+            <!-- Bottom Copyright & Credit -->
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-[10px] uppercase text-slate-450 dark:text-slate-500">
+                <p>&copy; {{ date('Y') }} SHOP.IO. All operations monitored securely.</p>
+                <p class="font-bold">
+                    Designed & Developed by <a href="https://allpilar.com" target="_blank" class="text-emerald-400 hover:text-emerald-300 transition hover:underline">All Pilar Web Solutions</a>
+                </p>
+            </div>
         </div>
     </footer>
 

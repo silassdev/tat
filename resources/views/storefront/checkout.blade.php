@@ -23,24 +23,52 @@
             <form method="POST" action="{{ route('checkout.place') }}" class="space-y-6">
                 @csrf
 
-                <!-- Logged in Customer Info -->
-                <div class="p-4 bg-slate-900 border border-slate-800 rounded-2xl flex items-center justify-between select-none">
-                    <div class="flex items-center gap-3">
-                        <div class="w-9 h-9 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-bold flex items-center justify-center text-sm shrink-0">
-                            {{ substr(auth()->user()->name, 0, 1) }}
+                @auth
+                    <!-- Logged in Customer Info -->
+                    <div class="p-4 bg-slate-900 border border-slate-800 rounded-2xl flex items-center justify-between select-none">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-bold flex items-center justify-center text-sm shrink-0">
+                                {{ substr(auth()->user()->name, 0, 1) }}
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold text-white">{{ auth()->user()->name }}</h4>
+                                <p class="text-[10px] text-slate-500 font-mono-tech">{{ auth()->user()->email }}</p>
+                            </div>
                         </div>
-                        <div>
-                            <h4 class="text-xs font-bold text-white">{{ auth()->user()->name }}</h4>
-                            <p class="text-[10px] text-slate-500 font-mono-tech">{{ auth()->user()->email }}</p>
-                        </div>
+                        <span class="text-[9px] font-mono-tech text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded uppercase">Verified</span>
                     </div>
-                    <span class="text-[9px] font-mono-tech text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded uppercase">Verified</span>
-                </div>
+                @else
+                    <!-- Guest Checkout Form Fields -->
+                    <div class="p-5 bg-slate-900 border border-slate-850 rounded-2xl space-y-4">
+                        <div class="flex items-center justify-between border-b border-slate-800 pb-2.5 mb-2 select-none">
+                            <h3 class="text-xs font-bold font-mono-tech text-slate-400 uppercase tracking-wider">// GUEST_BUYER_IDENTITY</h3>
+                            <a href="{{ route('login') }}" class="text-[10px] font-mono-tech text-emerald-400 hover:text-emerald-300 underline uppercase tracking-wide">
+                                Sign In / Register
+                            </a>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <x-input-label for="name" :value="__('Full Name')" />
+                                <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required placeholder="e.g. John Doe" />
+                                <x-input-error :messages="$errors->get('name')" class="mt-2" />
+                            </div>
+                            <div>
+                                <x-input-label for="email" :value="__('Email Address')" />
+                                <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required placeholder="e.g. john@example.com" />
+                                <x-input-error :messages="$errors->get('email')" class="mt-2" />
+                            </div>
+                        </div>
+                        <span class="block text-[9px] text-slate-500 font-mono-tech uppercase select-none">
+                            * An account claim prompt will be presented on the success page after payment.
+                        </span>
+                    </div>
+                @endauth
 
                 <!-- Phone number -->
                 <div>
                     <x-input-label for="phone" :value="__('Contact Phone Number')" />
-                    <x-text-input id="phone" class="block mt-1 w-full" type="text" name="phone" :value="old('phone', auth()->user()->phone)" required placeholder="e.g. +2348012345678" />
+                    <x-text-input id="phone" class="block mt-1 w-full" type="text" name="phone" :value="old('phone', auth()->check() ? auth()->user()->phone : '')" required placeholder="e.g. +2348012345678" />
                     <x-input-error :messages="$errors->get('phone')" class="mt-2" />
                 </div>
 
@@ -48,7 +76,10 @@
                 <div>
                     <x-input-label for="delivery_address" :value="__('Complete Delivery Location / Address')" />
                     <textarea id="delivery_address" name="delivery_address" rows="3" required
-                              class="block mt-1 w-full bg-slate-950/80 border-slate-800 dark:border-slate-800/80 rounded-xl focus:border-emerald-500 focus:ring-emerald-500 text-slate-200 text-xs shadow-sm">{{ old('delivery_address', auth()->user()->address) }}</textarea>
+                              class="block mt-1 w-full bg-slate-950/80 border-slate-800 dark:border-slate-800/80 rounded-xl focus:border-emerald-500 focus:ring-emerald-500 text-slate-200 text-xs shadow-sm">{{ old('delivery_address', auth()->check() ? auth()->user()->address : '') }}</textarea>
+                    @auth
+                        <span class="block text-[9px] font-mono-tech text-slate-500 mt-1 uppercase select-none">Saved from your profile. You can modify it for this order.</span>
+                    @endauth
                     <x-input-error :messages="$errors->get('delivery_address')" class="mt-2" />
                 </div>
 

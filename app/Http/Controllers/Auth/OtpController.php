@@ -119,7 +119,7 @@ class OtpController extends Controller
             $isNewUser = true;
             // Create temporary guest account
             $user = User::create([
-                'name' => 'Guest User',
+                'name' => session('guest_name', 'Guest User'),
                 'email' => $email,
                 'role' => 'user',
                 'status' => 'active',
@@ -136,11 +136,16 @@ class OtpController extends Controller
             ]);
         }
 
+        // Link all unclaimed orders with this email to the verified user
+        \App\Models\Order::where('email', $email)
+            ->whereNull('user_id')
+            ->update(['user_id' => $user->id]);
+
         // Login user
         Auth::login($user);
 
         // Merge activities (guest cart items) into user cart
-        $this->mergeGuestCart($user);
+        \App\Models\Cart::mergeGuestCart($user, session()->getId());
 
         // Redirect flow
         if ($isNewUser || !$user->password || Hash::needsRehash($user->password) || $user->name === 'Guest User') {
@@ -192,35 +197,60 @@ class OtpController extends Controller
     }
 
     /**
-     * Merge guest cart into user cart.
+     * Claim guest order by sending OTP email.
      */
-    private function mergeGuestCart(User $user)
+    public function claimOrder(Request $request)
     {
-        $sessionToken = session()->getId();
-        $guestCart = Cart::where('session_token', $sessionToken)->first();
+        $request->validate([
+            'order_number' => ['required', 'string', 'exists:orders,order_number'],
+        ]);
 
-        if ($guestCart) {
-            // Find or create authenticated user cart
-            $userCart = Cart::firstOrCreate(['user_id' => $user->id]);
+        $order = \App\Models\Order::where('order_number', $request->order_number)
+            ->whereNull('user_id')
+            ->first();
 
-            foreach ($guestCart->items as $item) {
-                // Check if user already has item in cart
-                $existingItem = CartItem::where('cart_id', $userCart->id)
-                    ->where('product_id', $item->product_id)
-                    ->first();
-
-                if ($existingItem) {
-                    $existingItem->increment('quantity', $item->quantity);
-                    $item->delete();
-                } else {
-                    $item->update(['cart_id' => $userCart->id]);
-                }
-            }
-
-            // Delete guest cart
-            $guestCart->delete();
+        if (!$order) {
+            return back()->withErrors(['claim' => 'This order has already been claimed or does not exist.']);
         }
+
+        $email = $order->email;
+        $otp = str_pad((string)random_int(100000, 999999), 6, '0', STR_PAD_LEFT);
+
+        // Save OTP to database
+        EmailOtp::create([
+            'email' => $email,
+            'otp' => $otp,
+            'expires_at' => now()->addMinutes(10),
+            'verified' => false,
+        ]);
+
+        // Send Email
+        try {
+            Mail::to($email)->send(new SendOtpMail($otp));
+            ActivityLog::create([
+                'event' => 'otp_sent',
+                'description' => "OTP code sent to email: {$email} for order claim.",
+                'ip_address' => $request->ip(),
+            ]);
+        } catch (\Exception $e) {
+            ActivityLog::create([
+                'event' => 'otp_send_failed',
+                'description' => "Failed to send OTP to: {$email} for order claim. Error: {$e->getMessage()}",
+                'ip_address' => $request->ip(),
+            ]);
+            return back()->withErrors(['claim' => 'Failed to send OTP email. Please verify your SMTP settings in .env: ' . $e->getMessage()]);
+        }
+
+        // Store email and claim order number in session
+        session([
+            'checkout_email' => $email,
+            'claim_order_number' => $order->order_number,
+        ]);
+
+        return redirect()->route('otp.verify');
     }
+
+
 
     /**
      * Redirect logic based on user roles.

@@ -14,12 +14,15 @@ Route::get('/cart', [StorefrontController::class, 'getCart'])->name('cart.index'
 Route::post('/cart/add', [StorefrontController::class, 'addToCart'])->name('cart.add');
 Route::post('/cart/update', [StorefrontController::class, 'updateCart'])->name('cart.update');
 Route::post('/cart/remove', [StorefrontController::class, 'removeFromCart'])->name('cart.remove');
+Route::get('/contact', [StorefrontController::class, 'showContact'])->name('contact');
+Route::post('/contact', [StorefrontController::class, 'submitContact']);
 
 // OTP Onboarding / Unified Entry flow
 Route::middleware('guest')->group(function () {
     Route::post('/otp/send', [OtpController::class, 'sendOtp'])->name('otp.send');
     Route::get('/otp/verify', [OtpController::class, 'showVerify'])->name('otp.verify');
     Route::post('/otp/verify', [OtpController::class, 'verifyOtp']);
+    Route::post('/order/claim', [OtpController::class, 'claimOrder'])->name('order.claim');
 });
 
 // Forced Password Creation for OTP guest logins

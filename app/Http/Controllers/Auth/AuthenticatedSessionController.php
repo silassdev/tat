@@ -24,9 +24,25 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
+        $oldSessionToken = $request->session()->getId();
+
         $request->authenticate();
 
         $request->session()->regenerate();
+
+        $user = Auth::user();
+        if ($user) {
+            \App\Models\Cart::mergeGuestCart($user, $oldSessionToken);
+        }
+
+        if ($user && $user->isAdmin()) {
+            return redirect()->intended(route('admin.dashboard'));
+        }
+
+        if (session()->has('checkout_redirect')) {
+            session()->forget('checkout_redirect');
+            return redirect()->route('checkout');
+        }
 
         return redirect()->intended(route('dashboard', absolute: false));
     }
