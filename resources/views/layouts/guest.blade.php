@@ -7,10 +7,10 @@
 
         <title>{{ config('app.name', 'Hausify') }} Portal</title>
 
-        <!-- Fonts: Outfit (Sans) and JetBrains Mono (Tech HUD) -->
+        <!-- Fonts: Inter and JetBrains Mono -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 
         <!-- Inline script to prevent theme flickering on page load -->
         <script>
@@ -26,7 +26,7 @@
 
         <style>
             body {
-                font-family: 'Outfit', sans-serif;
+                font-family: 'Inter', sans-serif;
             }
             .font-mono-tech {
                 font-family: 'JetBrains Mono', monospace;
