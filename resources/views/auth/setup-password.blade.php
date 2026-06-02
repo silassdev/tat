@@ -1,6 +1,6 @@
 <x-guest-layout>
     <div class="mb-6 text-center">
-        <h2 class="text-lg font-bold text-slate-900 dark:text-white uppercase tracking-wider font-mono-tech">// ACCOUNT_CREATION_SECURE</h2>
+        <h2 class="text-lg font-bold text-slate-900 dark:text-white uppercase tracking-wider font-mono-tech">ACCOUNT CREATION</h2>
         <p class="text-xs text-slate-500 mt-1">Please secure your account by choosing a display name and password.</p>
     </div>
 

@@ -67,7 +67,7 @@
     <div class="container">
         <div class="logo">SHOP</div>
         <h1>Email Verification Code</h1>
-        <p>You requested a one-time verification code to secure your email. Use the code below to complete your onboarding or checkout. This code is valid for 10 minutes.</p>
+        <p>You requested a one-time verification code to secure your email. Use the code below to complete your transaction. This code is valid for 10 minutes.</p>
         <div class="otp-box">{{ $otp }}</div>
         <p>If you did not request this, please ignore this email.</p>
         <div class="footer">

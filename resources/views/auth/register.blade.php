@@ -1,8 +1,8 @@
 <x-guest-layout>
     <div class="mb-6 text-center">
-        <h2 class="text-lg font-bold text-slate-900 dark:text-white uppercase tracking-wider font-mono-tech">// CREATE_ACCOUNT_NODE</h2>
+        <h2 class="text-lg font-bold text-slate-900 dark:text-white uppercase tracking-wider font-mono-tech">CREATE ACCOUNT</h2>
         @if (session()->has('checkout_redirect'))
-            <p class="text-xs text-emerald-400 mt-1 font-mono-tech">// YOUR_CART_ITEMS_WILL_BE_MERGED_ONCE_REGISTERED</p>
+            <p class="text-xs text-emerald-400 mt-1 font-mono-tech">YOUR CART ITEMS WILL BE MERGED ONCE REGISTERED</p>
         @else
             <p class="text-xs text-slate-500 mt-1">Create a new secure credentials pair for storing your purchase histories.</p>
         @endif

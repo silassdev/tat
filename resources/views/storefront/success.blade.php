@@ -11,7 +11,7 @@
 
         <div class="space-y-3">
             <span class="inline-block px-3 py-1 font-mono-tech text-[10px] font-bold tracking-widest text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-lg uppercase select-none">
-                // TRANSACTION_COMPLETED_SUCCESS
+                TRANSACTION_COMPLETED
             </span>
             <h1 class="text-3xl font-black text-white tracking-tight leading-tight select-none">Order Confirmed Securely!</h1>
             <p class="text-xs text-slate-400 max-w-md mx-auto leading-relaxed select-none">

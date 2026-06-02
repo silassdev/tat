@@ -209,141 +209,437 @@
                 </div>
             </div>
 
-            {{-- ===== 2. PRODUCTS TAB ===== --}}
-            @isset($products)
-            <div x-show="activeTab === 'products'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" class="space-y-6" style="display:none;">
+            {{-- ===== 2. PRODUCTS TAB (Fragment View) ===== --}}
+            <div x-show="activeTab === 'products'"
+                 x-data="{
+                     editId: null,
+                     catFilter: 'all',
+                     viewMode: 'grid',
+                     search: '',
+                     showAddForm: false,
+                     products: {{ Js::from($products ?? collect()) }},
+                     categories: {{ Js::from($categories ?? collect()) }},
+                     get filteredProducts() {
+                         return this.products.filter(p => {
+                             const matchCat  = this.catFilter === 'all' || String(p.category_id) === String(this.catFilter);
+                             const matchSearch = this.search === '' || p.name.toLowerCase().includes(this.search.toLowerCase());
+                             return matchCat && matchSearch;
+                         });
+                     },
+                     get totalActive()      { return this.products.filter(p => p.status === 'active').length; },
+                     get totalInactive()    { return this.products.filter(p => p.status === 'inactive').length; },
+                     get totalOutOfStock()  { return this.products.filter(p => p.stock <= 0).length; },
+                 }"
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0 translate-y-2"
+                 x-transition:enter-end="opacity-100 translate-y-0"
+                 class="space-y-6"
+                 style="display:none;">
 
-                {{-- Page Title --}}
-                <div>
-                    <h1 class="text-xl font-bold text-slate-900 dark:text-white">Products</h1>
-                    <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Manage your product catalogue.</p>
+                {{-- Header Row --}}
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <div>
+                        <h1 class="text-xl font-bold text-slate-900 dark:text-white">Product Catalogue</h1>
+                        <p class="text-sm text-slate-500 dark:text-slate-400 mt-0.5">View, edit, and manage all products in the inventory.</p>
+                    </div>
+                    <button @click="showAddForm = !showAddForm"
+                            :class="showAddForm ? 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300' : 'bg-violet-600 hover:bg-violet-700 text-white'"
+                            class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 shadow-sm whitespace-nowrap">
+                        <svg class="w-4 h-4 transition-transform duration-200" :class="showAddForm ? 'rotate-45' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                        <span x-text="showAddForm ? 'Cancel' : 'Add Product'"></span>
+                    </button>
                 </div>
 
-                {{-- Products Table --}}
-                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
-                    <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800">
-                        <h2 class="text-sm font-semibold text-slate-900 dark:text-white">All Products</h2>
+                {{-- Stats Strip --}}
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-violet-50 dark:bg-violet-500/10 flex items-center justify-center shrink-0">
+                            <svg class="w-5 h-5 text-violet-600 dark:text-violet-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                        </div>
+                        <div>
+                            <p class="text-lg font-bold text-slate-900 dark:text-white" x-text="products.length">0</p>
+                            <p class="text-xs text-slate-400">Total SKUs</p>
+                        </div>
                     </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-sm text-slate-600 dark:text-slate-300">
-                            <thead>
-                                <tr class="bg-slate-50 dark:bg-slate-800/50 text-left">
-                                    <th class="px-6 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Product</th>
-                                    <th class="px-6 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Category</th>
-                                    <th class="px-6 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Price / Cost</th>
-                                    <th class="px-6 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-center">Stock</th>
-                                    <th class="px-6 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-right">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
-                                @foreach ($products as $prod)
-                                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
-                                        <td class="px-6 py-4">
-                                            <div class="flex items-center gap-3">
-                                                <img src="{{ $prod->primary_image }}" alt="{{ $prod->name }}" class="w-9 h-9 object-cover rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
+                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center shrink-0">
+                            <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </div>
+                        <div>
+                            <p class="text-lg font-bold text-slate-900 dark:text-white" x-text="totalActive">0</p>
+                            <p class="text-xs text-slate-400">Active</p>
+                        </div>
+                    </div>
+                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center shrink-0">
+                            <svg class="w-5 h-5 text-amber-500 dark:text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+                        </div>
+                        <div>
+                            <p class="text-lg font-bold text-slate-900 dark:text-white" x-text="totalInactive">0</p>
+                            <p class="text-xs text-slate-400">Inactive</p>
+                        </div>
+                    </div>
+                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-rose-50 dark:bg-rose-500/10 flex items-center justify-center shrink-0">
+                            <svg class="w-5 h-5 text-rose-500 dark:text-rose-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                        </div>
+                        <div>
+                            <p class="text-lg font-bold text-slate-900 dark:text-white" x-text="totalOutOfStock">0</p>
+                            <p class="text-xs text-slate-400">Out of Stock</p>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Toolbar: Search + Category Filter + View Toggle --}}
+                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-3 flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+                    {{-- Search --}}
+                    <div class="relative flex-1 w-full">
+                        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        <input x-model="search" type="text" placeholder="Search products by name…"
+                               class="w-full pl-9 pr-4 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-200 placeholder-slate-400 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition"/>
+                    </div>
+
+                    {{-- Category Filter --}}
+                    <div class="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 shrink-0 max-w-full">
+                        <button @click="catFilter = 'all'"
+                                :class="catFilter === 'all' ? 'bg-violet-600 text-white border-violet-600' : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:border-violet-400'"
+                                class="px-3 py-1.5 rounded-lg border text-xs font-medium transition whitespace-nowrap">All</button>
+                        @foreach($categories ?? [] as $cat)
+                        <button @click="catFilter = '{{ $cat->id }}'"
+                                :class="catFilter === '{{ $cat->id }}' ? 'bg-violet-600 text-white border-violet-600' : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:border-violet-400'"
+                                class="px-3 py-1.5 rounded-lg border text-xs font-medium transition whitespace-nowrap">{{ $cat->name }}</button>
+                        @endforeach
+                    </div>
+
+                    {{-- View Mode Toggle --}}
+                    <div class="flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl shrink-0">
+                        <button @click="viewMode = 'grid'"
+                                :class="viewMode === 'grid' ? 'bg-white dark:bg-slate-700 shadow-sm text-violet-600 dark:text-violet-400' : 'text-slate-400'"
+                                class="p-1.5 rounded-lg transition">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+                        </button>
+                        <button @click="viewMode = 'list'"
+                                :class="viewMode === 'list' ? 'bg-white dark:bg-slate-700 shadow-sm text-violet-600 dark:text-violet-400' : 'text-slate-400'"
+                                class="p-1.5 rounded-lg transition">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+                        </button>
+                    </div>
+                </div>
+
+                {{-- ── GRID VIEW ── --}}
+                <div x-show="viewMode === 'grid'" x-transition>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                        <template x-for="p in filteredProducts" :key="p.id">
+                            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 group">
+
+                                {{-- Product Image --}}
+                                <div class="relative h-44 bg-slate-100 dark:bg-slate-800 overflow-hidden">
+                                    <img :src="p.primary_image || '/images/placeholder.png'"
+                                         :alt="p.name"
+                                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"/>
+                                    {{-- Status badge --}}
+                                    <div class="absolute top-2.5 left-2.5">
+                                        <span :class="p.status === 'active' ? 'bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300' : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400'"
+                                              class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider">
+                                            <span class="w-1.5 h-1.5 rounded-full" :class="p.status === 'active' ? 'bg-emerald-500' : 'bg-slate-400'"></span>
+                                            <span x-text="p.status"></span>
+                                        </span>
+                                    </div>
+                                    {{-- Stock badge --}}
+                                    <div class="absolute top-2.5 right-2.5">
+                                        <span :class="p.stock <= 0 ? 'bg-rose-100 dark:bg-rose-900/60 text-rose-700 dark:text-rose-300' : 'bg-white/90 dark:bg-slate-900/80 text-slate-700 dark:text-slate-300'"
+                                              class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold border" :class="p.stock <= 0 ? 'border-rose-200 dark:border-rose-800' : 'border-slate-200 dark:border-slate-700'">
+                                            <span x-text="p.stock <= 0 ? 'Out of Stock' : 'Stock: ' + p.stock"></span>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {{-- Card Body --}}
+                                <div class="p-4">
+                                    <div class="flex items-start justify-between gap-2 mb-1">
+                                        <div class="min-w-0">
+                                            <p class="font-semibold text-slate-900 dark:text-white truncate" x-text="p.name"></p>
+                                            <p class="text-xs text-slate-400 mt-0.5" x-text="(p.category ? p.category.name : '—') + ' · ' + (p.color || 'No color') + ' · ' + p.unit"></p>
+                                        </div>
+                                        <div class="text-right shrink-0">
+                                            <p class="font-bold text-slate-900 dark:text-white text-sm" x-text="'$' + parseFloat(p.price).toFixed(2)"></p>
+                                            <p class="text-xs text-slate-400 mt-0.5" x-text="'Cost $' + parseFloat(p.cost).toFixed(2)"></p>
+                                        </div>
+                                    </div>
+
+                                    {{-- Action bar --}}
+                                    <div class="flex items-center gap-2 mt-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+                                        <button @click="editId = (editId === p.id ? null : p.id)"
+                                                :class="editId === p.id ? 'bg-violet-100 dark:bg-violet-500/20 text-violet-700 dark:text-violet-400 border-violet-300 dark:border-violet-700' : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-violet-400 hover:text-violet-600'"
+                                                class="flex-1 inline-flex items-center justify-center gap-1.5 py-1.5 rounded-lg border text-xs font-medium transition">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                            <span x-text="editId === p.id ? 'Close' : 'Edit'"></span>
+                                        </button>
+                                        <form :action="'/admin/products/' + p.id" method="POST" class="flex-1"
+                                              onsubmit="return confirm('Permanently delete this product?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                    class="w-full inline-flex items-center justify-center gap-1.5 py-1.5 rounded-lg border border-rose-200 dark:border-rose-800 text-xs font-medium text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                                Delete
+                                            </button>
+                                        </form>
+                                    </div>
+
+                                    {{-- ── Inline Edit Fragment ── --}}
+                                    <div x-show="editId === p.id"
+                                         x-transition:enter="transition ease-out duration-200"
+                                         x-transition:enter-start="opacity-0 -translate-y-2"
+                                         x-transition:enter-end="opacity-100 translate-y-0"
+                                         class="mt-3 pt-3 border-t border-violet-100 dark:border-violet-900/40">
+                                        <p class="text-[10px] font-bold uppercase tracking-widest text-violet-500 dark:text-violet-400 mb-3">// EDIT_PRODUCT_NODE</p>
+                                        <form :action="'/admin/products/' + p.id" method="POST" enctype="multipart/form-data" class="space-y-3">
+                                            @csrf
+                                            @method('PUT')
+                                            <div class="grid grid-cols-2 gap-2">
+                                                <div class="col-span-2">
+                                                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Product Name</label>
+                                                    <input type="text" name="name" :value="p.name" required
+                                                           class="w-full text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-200 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500"/>
+                                                </div>
                                                 <div>
-                                                    <p class="font-semibold text-slate-900 dark:text-white">{{ $prod->name }}</p>
-                                                    <p class="text-xs text-slate-400 mt-0.5">{{ $prod->color ?? 'No color' }} &middot; {{ $prod->unit }}</p>
+                                                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Retail Price</label>
+                                                    <input type="number" step="0.01" name="price" :value="p.price" required
+                                                           class="w-full text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-200 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500"/>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Cost Price</label>
+                                                    <input type="number" step="0.01" name="cost" :value="p.cost" required
+                                                           class="w-full text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-200 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500"/>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Stock</label>
+                                                    <input type="number" name="stock" :value="p.stock" required
+                                                           class="w-full text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-200 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500"/>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Status</label>
+                                                    <select name="status" required
+                                                            class="w-full text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-200 focus:outline-none focus:border-violet-500">
+                                                        <option value="active"   :selected="p.status === 'active'">Active</option>
+                                                        <option value="inactive" :selected="p.status === 'inactive'">Inactive</option>
+                                                    </select>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Category</label>
+                                                    <select name="category_id" required
+                                                            class="w-full text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-200 focus:outline-none focus:border-violet-500">
+                                                        @foreach($categories ?? [] as $cat)
+                                                        <option value="{{ $cat->id }}" :selected="p.category_id == {{ $cat->id }}">{{ $cat->name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Color</label>
+                                                    <input type="text" name="color" :value="p.color"
+                                                           class="w-full text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-200 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500"/>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Unit</label>
+                                                    <input type="text" name="unit" :value="p.unit" required
+                                                           class="w-full text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-200 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500"/>
+                                                </div>
+                                                <div class="col-span-2">
+                                                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Description</label>
+                                                    <textarea name="description" rows="2" required
+                                                              class="w-full text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-200 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 resize-none"
+                                                              x-text="p.description"></textarea>
+                                                </div>
+                                                <div class="col-span-2">
+                                                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Add More Images</label>
+                                                    <input type="file" name="images[]" multiple
+                                                           class="w-full text-xs text-slate-500 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 rounded-lg p-2"/>
                                                 </div>
                                             </div>
-                                        </td>
-                                        <td class="px-6 py-4 text-slate-500 dark:text-slate-400">{{ $prod->category->name }}</td>
-                                        <td class="px-6 py-4">
-                                            <p class="font-semibold text-slate-900 dark:text-white">${{ number_format($prod->price, 2) }}</p>
-                                            <p class="text-xs text-slate-400 mt-0.5">Cost: ${{ number_format($prod->cost, 2) }}</p>
-                                        </td>
-                                        <td class="px-6 py-4 text-center">
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $prod->stock <= 0 ? 'bg-rose-100 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300' }}">
-                                                {{ $prod->stock }}
-                                            </span>
-                                        </td>
-                                        <td class="px-6 py-4 text-right">
-                                            <form method="POST" action="{{ route('admin.products.destroy', ['product' => $prod->id]) }}" class="inline">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="text-xs font-medium text-rose-500 hover:text-rose-700 dark:hover:text-rose-400 transition px-3 py-1.5 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-500/10">
-                                                    Delete
-                                                </button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                                            <button type="submit"
+                                                    class="w-full flex items-center justify-center gap-2 py-2 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-xs font-semibold transition">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                                                Save Changes
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+
+                        {{-- Empty state --}}
+                        <template x-if="filteredProducts.length === 0">
+                            <div class="col-span-full py-16 flex flex-col items-center justify-center text-center">
+                                <div class="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-4">
+                                    <svg class="w-7 h-7 text-slate-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                                </div>
+                                <p class="text-sm font-semibold text-slate-700 dark:text-slate-300">No products found</p>
+                                <p class="text-xs text-slate-400 mt-1">Try adjusting your search or category filter.</p>
+                            </div>
+                        </template>
                     </div>
                 </div>
 
-                {{-- Add Product Form --}}
-                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm">
-                    <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800">
-                        <h2 class="text-sm font-semibold text-slate-900 dark:text-white">Add New Product</h2>
-                        <p class="text-xs text-slate-400 mt-0.5">Fill in the details below to add a product to the catalogue.</p>
+                {{-- ── LIST VIEW ── --}}
+                <div x-show="viewMode === 'list'" x-transition>
+                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm text-slate-600 dark:text-slate-300">
+                                <thead>
+                                    <tr class="bg-slate-50 dark:bg-slate-800/50 text-left">
+                                        <th class="px-5 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Product</th>
+                                        <th class="px-5 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider hidden sm:table-cell">Category</th>
+                                        <th class="px-5 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Price</th>
+                                        <th class="px-5 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-center">Stock</th>
+                                        <th class="px-5 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-center">Status</th>
+                                        <th class="px-5 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                                    <template x-for="p in filteredProducts" :key="'list-' + p.id">
+                                        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
+                                            <td class="px-5 py-3.5">
+                                                <div class="flex items-center gap-3">
+                                                    <img :src="p.primary_image || '/images/placeholder.png'"
+                                                         :alt="p.name"
+                                                         class="w-9 h-9 rounded-xl object-cover bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shrink-0"/>
+                                                    <div class="min-w-0">
+                                                        <p class="font-semibold text-slate-900 dark:text-white truncate" x-text="p.name"></p>
+                                                        <p class="text-xs text-slate-400 mt-0.5" x-text="(p.color || 'No color') + ' · ' + p.unit"></p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="px-5 py-3.5 text-slate-500 dark:text-slate-400 hidden sm:table-cell" x-text="p.category ? p.category.name : '—'"></td>
+                                            <td class="px-5 py-3.5">
+                                                <p class="font-semibold text-slate-900 dark:text-white" x-text="'$' + parseFloat(p.price).toFixed(2)"></p>
+                                                <p class="text-xs text-slate-400 mt-0.5" x-text="'Cost $' + parseFloat(p.cost).toFixed(2)"></p>
+                                            </td>
+                                            <td class="px-5 py-3.5 text-center">
+                                                <span :class="p.stock <= 0 ? 'bg-rose-100 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'"
+                                                      class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                                                      x-text="p.stock"></span>
+                                            </td>
+                                            <td class="px-5 py-3.5 text-center">
+                                                <span :class="p.status === 'active' ? 'bg-emerald-100 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400' : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'"
+                                                      class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize"
+                                                      x-text="p.status"></span>
+                                            </td>
+                                            <td class="px-5 py-3.5 text-right">
+                                                <div class="flex items-center justify-end gap-2">
+                                                    <button @click="editId = (editId === p.id ? null : p.id); viewMode = 'grid'"
+                                                            class="px-3 py-1.5 border border-violet-200 dark:border-violet-800 text-xs font-medium text-violet-600 dark:text-violet-400 rounded-lg hover:bg-violet-50 dark:hover:bg-violet-500/10 transition">
+                                                        Edit
+                                                    </button>
+                                                    <form :action="'/admin/products/' + p.id" method="POST"
+                                                          onsubmit="return confirm('Permanently delete this product?')">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit"
+                                                                class="px-3 py-1.5 border border-rose-200 dark:border-rose-800 text-xs font-medium text-rose-500 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-500/10 transition">
+                                                            Delete
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                        <template x-if="filteredProducts.length === 0">
+                            <div class="py-12 text-center">
+                                <p class="text-sm text-slate-400">No products match your filters.</p>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                {{-- ── ADD PRODUCT FORM (collapsible) ── --}}
+                <div x-show="showAddForm"
+                     x-transition:enter="transition ease-out duration-300"
+                     x-transition:enter-start="opacity-0 -translate-y-3"
+                     x-transition:enter-end="opacity-100 translate-y-0"
+                     class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
+                    <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                        <div>
+                            <p class="text-[10px] font-bold uppercase tracking-widest text-violet-500 dark:text-violet-400 mb-0.5">// ADD_PRODUCT_NODE</p>
+                            <h2 class="text-sm font-semibold text-slate-900 dark:text-white">Register New Product</h2>
+                            <p class="text-xs text-slate-400 mt-0.5">Fill in all fields to add a product to the store catalogue.</p>
+                        </div>
+                        <button @click="showAddForm = false" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
                     </div>
                     <div class="p-6">
                         <form method="POST" action="{{ route('admin.products.store') }}" enctype="multipart/form-data" class="space-y-4">
                             @csrf
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
-                                    <x-input-label for="category_id" :value="__('Category')" />
-                                    <select id="category_id" name="category_id" required class="block mt-1 w-full bg-white dark:bg-slate-950 border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 text-sm rounded-xl focus:border-violet-500 focus:ring-violet-500">
-                                        @foreach ($categories as $cat)
+                                    <x-input-label for="ap_category_id" :value="__('Category')" />
+                                    <select id="ap_category_id" name="category_id" required class="block mt-1 w-full bg-white dark:bg-slate-950 border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 text-sm rounded-xl focus:border-violet-500 focus:ring-violet-500">
+                                        @foreach ($categories ?? [] as $cat)
                                             <option value="{{ $cat->id }}">{{ $cat->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
                                 <div>
-                                    <x-input-label for="prod_name" :value="__('Product Name')" />
-                                    <x-text-input id="prod_name" class="block mt-1 w-full" type="text" name="name" required placeholder="e.g. Wireless Keyboard" />
+                                    <x-input-label for="ap_name" :value="__('Product Name')" />
+                                    <x-text-input id="ap_name" class="block mt-1 w-full" type="text" name="name" required placeholder="e.g. Wireless Keyboard" />
                                 </div>
                             </div>
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 <div>
-                                    <x-input-label for="prod_price" :value="__('Retail Price ($)')" />
-                                    <x-text-input id="prod_price" class="block mt-1 w-full" type="number" step="0.01" name="price" required placeholder="0.00" />
+                                    <x-input-label for="ap_price" :value="__('Retail Price ($)')" />
+                                    <x-text-input id="ap_price" class="block mt-1 w-full" type="number" step="0.01" name="price" required placeholder="0.00" />
                                 </div>
                                 <div>
-                                    <x-input-label for="prod_cost" :value="__('Cost Price ($)')" />
-                                    <x-text-input id="prod_cost" class="block mt-1 w-full" type="number" step="0.01" name="cost" required placeholder="0.00" />
+                                    <x-input-label for="ap_cost" :value="__('Cost Price ($)')" />
+                                    <x-text-input id="ap_cost" class="block mt-1 w-full" type="number" step="0.01" name="cost" required placeholder="0.00" />
                                 </div>
                                 <div>
-                                    <x-input-label for="prod_stock" :value="__('Stock Units')" />
-                                    <x-text-input id="prod_stock" class="block mt-1 w-full" type="number" name="stock" required placeholder="0" />
+                                    <x-input-label for="ap_stock" :value="__('Stock Units')" />
+                                    <x-text-input id="ap_stock" class="block mt-1 w-full" type="number" name="stock" required placeholder="0" />
                                 </div>
                             </div>
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 <div>
-                                    <x-input-label for="prod_color" :value="__('Color')" />
-                                    <x-text-input id="prod_color" class="block mt-1 w-full" type="text" name="color" placeholder="e.g. Space Gray" />
+                                    <x-input-label for="ap_color" :value="__('Color')" />
+                                    <x-text-input id="ap_color" class="block mt-1 w-full" type="text" name="color" placeholder="e.g. Space Gray" />
                                 </div>
                                 <div>
-                                    <x-input-label for="prod_unit" :value="__('Unit Type')" />
-                                    <x-text-input id="prod_unit" class="block mt-1 w-full" type="text" name="unit" required placeholder="e.g. pcs, box, pack" />
+                                    <x-input-label for="ap_unit" :value="__('Unit Type')" />
+                                    <x-text-input id="ap_unit" class="block mt-1 w-full" type="text" name="unit" required placeholder="e.g. pcs, box, pack" />
                                 </div>
                                 <div>
-                                    <x-input-label for="prod_status" :value="__('Status')" />
-                                    <select id="prod_status" name="status" required class="block mt-1 w-full bg-white dark:bg-slate-950 border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 text-sm rounded-xl focus:border-violet-500 focus:ring-violet-500">
+                                    <x-input-label for="ap_status" :value="__('Status')" />
+                                    <select id="ap_status" name="status" required class="block mt-1 w-full bg-white dark:bg-slate-950 border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 text-sm rounded-xl focus:border-violet-500 focus:ring-violet-500">
                                         <option value="active">Active</option>
                                         <option value="inactive">Inactive</option>
                                     </select>
                                 </div>
                             </div>
                             <div>
-                                <x-input-label for="prod_desc" :value="__('Description')" />
-                                <textarea id="prod_desc" name="description" rows="3" required placeholder="Describe the product..."
+                                <x-input-label for="ap_desc" :value="__('Description')" />
+                                <textarea id="ap_desc" name="description" rows="3" required placeholder="Describe the product…"
                                           class="block mt-1 w-full bg-white dark:bg-slate-950 border-slate-300 dark:border-slate-700 rounded-xl focus:border-violet-500 focus:ring-violet-500 text-slate-800 dark:text-slate-200 text-sm shadow-sm"></textarea>
                             </div>
                             <div>
-                                <x-input-label for="prod_images" :value="__('Product Images')" />
-                                <input id="prod_images" type="file" name="images[]" multiple class="block mt-1 w-full text-sm text-slate-500 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 rounded-xl p-2 focus:border-violet-500" />
+                                <x-input-label for="ap_images" :value="__('Product Images')" />
+                                <input id="ap_images" type="file" name="images[]" multiple
+                                       class="block mt-1 w-full text-sm text-slate-500 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 rounded-xl p-2 focus:border-violet-500" />
                             </div>
-                            <div class="pt-4 border-t border-slate-100 dark:border-slate-800">
-                                <x-primary-button>Add Product to Catalogue</x-primary-button>
+                            <div class="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center gap-3">
+                                <x-primary-button>Add to Catalogue</x-primary-button>
+                                <button type="button" @click="showAddForm = false"
+                                        class="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+                                    Cancel
+                                </button>
                             </div>
                         </form>
                     </div>
                 </div>
             </div>
-            @endisset
 
             {{-- ===== 3. ORDERS TAB ===== --}}
             @php $allOrders = \App\Models\Order::with(['items.product', 'payment'])->latest()->get(); @endphp

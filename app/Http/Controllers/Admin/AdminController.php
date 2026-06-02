@@ -37,6 +37,16 @@ class AdminController extends Controller
         
         $recentActivity = ActivityLog::with('user')->latest()->limit(15)->get();
 
+        // Always load products/categories so Products tab is accessible from any entry point
+        $products   = Product::with(['category', 'images'])->latest()->get();
+        $categories = Category::all();
+
+        // Always load customers with full context for the Customers tab
+        $customers  = User::where('role', 'user')
+                          ->with(['orders.payment', 'orders.items.product', 'activityLogs'])
+                          ->latest()
+                          ->get();
+
         return view('admin.dashboard', compact(
             'totalSales',
             'totalOrders',
@@ -44,7 +54,10 @@ class AdminController extends Controller
             'failedPayments',
             'outOfStockProducts',
             'totalUsers',
-            'recentActivity'
+            'recentActivity',
+            'products',
+            'categories',
+            'customers'
         ));
     }
 
@@ -237,6 +250,39 @@ class AdminController extends Controller
         });
 
         return back()->with('status', 'Order status updated successfully. System stock balances synced.');
+    }
+
+    /**
+     * Update customer profile details (Admin Edit).
+     */
+    public function customersUpdate(Request $request, $id)
+    {
+        $request->validate([
+            'name'    => ['required', 'string', 'max:255'],
+            'email'   => ['required', 'email', 'max:255', "unique:users,email,{$id}"],
+            'phone'   => ['nullable', 'string', 'max:30'],
+            'address' => ['nullable', 'string', 'max:500'],
+            'status'  => ['required', 'string', 'in:active,disabled'],
+        ]);
+
+        $user = User::where('role', 'user')->findOrFail($id);
+
+        $user->update([
+            'name'    => $request->name,
+            'email'   => $request->email,
+            'phone'   => $request->phone,
+            'address' => $request->address,
+            'status'  => $request->status,
+        ]);
+
+        ActivityLog::create([
+            'user_id'     => Auth::id(),
+            'event'       => 'customer_profile_updated',
+            'description' => "Admin updated profile details for customer: {$user->email}",
+            'ip_address'  => $request->ip(),
+        ]);
+
+        return back()->with('status', "Customer profile for {$user->name} updated successfully.");
     }
 
     /**

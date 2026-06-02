@@ -14,7 +14,7 @@
 
             <div class="mb-6">
                 <span class="inline-block px-3 py-1 font-mono-tech text-[9px] font-bold tracking-widest text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-lg uppercase select-none">
-                    // GATEWAY_CHECKOUT_PROTOCOL
+                    CHECKOUT
                 </span>
                 <h2 class="text-xl sm:text-2xl font-bold text-white tracking-tight mt-2 select-none">Secure Order Checkout</h2>
                 <p class="text-xs text-slate-500 mt-1 select-none">Provide your delivery location and specify your preferred secure local payment node.</p>

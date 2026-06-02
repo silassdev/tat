@@ -12,7 +12,7 @@
 
         <div class="mb-6">
             <span class="inline-block px-3 py-1 font-mono-tech text-[9px] font-bold tracking-widest text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-lg uppercase select-none">
-                // SECURE_CONTACT_PROTOCOL
+                CONTACT US TODAY
             </span>
             <h2 class="text-xl sm:text-2xl font-bold text-white tracking-tight mt-2 select-none">Secure Communication Node</h2>
             <p class="text-xs text-slate-500 mt-1 select-none">Transmit your inquiry directly to our administrator mailbox. All channels are monitored.</p>
@@ -54,7 +54,7 @@
             <div class="pt-4 border-t border-slate-800/80">
                 <button type="submit" 
                         class="w-full py-4 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold font-mono-tech text-xs uppercase tracking-wider rounded-xl shadow-lg transition">
-                    [ Transmit Secure Message ]
+                   Send Message
                 </button>
             </div>
         </form>

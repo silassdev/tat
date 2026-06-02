@@ -3,7 +3,7 @@
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
     <div class="mb-6 text-center">
-        <h2 class="text-lg font-bold text-slate-900 dark:text-white uppercase tracking-wider font-mono-tech">// EMAIL_VERIFICATION_REQUIRED</h2>
+        <h2 class="text-lg font-bold text-slate-900 dark:text-white uppercase tracking-wider font-mono-tech">EMAIL VERIFICATION REQUIRED</h2>
         <p class="text-xs text-slate-500 mt-1">We sent a 6-digit OTP code to verify your identity. Check your inbox: <strong class="text-slate-700 dark:text-slate-300">{{ $email }}</strong></p>
     </div>
 

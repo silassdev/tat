@@ -36,7 +36,7 @@
 
         <div class="max-w-xl relative z-10 space-y-4">
             <span class="inline-block px-3 py-1 font-mono-tech text-[10px] font-bold tracking-widest text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-full uppercase">
-                // SECURE_COMMERCE_PROTOCOL_INIT
+                SECURE COMMERCE_PROTOCOL_INIT
             </span>
             <h1 class="text-3xl sm:text-5xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
                 High-End Technical <span class="bg-gradient-to-r from-emerald-500 to-teal-400 dark:from-emerald-400 dark:to-teal-300 bg-clip-text text-transparent">Gadgets & Systems</span>
